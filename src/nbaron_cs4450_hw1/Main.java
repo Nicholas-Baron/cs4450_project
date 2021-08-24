@@ -20,13 +20,24 @@ import static org.lwjgl.opengl.GL11.*;
 
 public final class Main {
 
+    public static final int HEIGHT = 480;
+    public static final int WIDTH = 640;
+
+    /*
+     * constructor
+     * purpose: initialize instance variables
+     * and ensure only this class can construct itself.
+     */
+    private Main() {
+    }
+
     /*
      * method: createWindow
      * purpose: Initialize the OpenGL display
      */
     private void createWindow() throws LWJGLException {
         Display.setFullscreen(false);
-        Display.setDisplayMode(new DisplayMode(640, 480));
+        Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
         Display.setTitle("Test OpenGL");
         Display.create();
     }
@@ -39,7 +50,7 @@ public final class Main {
         glClearColor(0, 0, 0, 0);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(0, 640, 0, 480, 1, -1);
+        glOrtho(0, WIDTH, 0, HEIGHT, 1, -1);
         glMatrixMode(GL_MODELVIEW);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     }
