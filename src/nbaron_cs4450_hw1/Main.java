@@ -12,6 +12,9 @@
  */
 package nbaron_cs4450_hw1;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -20,6 +23,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public final class Main {
 
+    private static final String COORD_FILE = "coordinates.txt";
     public static final int HEIGHT = 480;
     public static final int WIDTH = 640;
 
@@ -56,6 +60,31 @@ public final class Main {
     }
 
     /*
+     * method: loadShapes
+     * purpose: load the list of Shapes from a given file
+     */
+    private void loadShapes(String path) throws FileNotFoundException {
+        Scanner scanner = new Scanner(new File(path));
+        while (scanner.hasNext()) {
+            char shapeType = scanner.next(".").charAt(0);
+            switch (shapeType) {
+                case 'l':
+                    System.out.println("Line: " + scanner.nextLine());
+                    break;
+                case 'c':
+                    System.out.println("Circle: " + scanner.nextLine());
+                    break;
+                case 'e':
+                    System.out.println("Ellipse: " + scanner.nextLine());
+                    break;
+                default:
+                    System.out.println("Unknown type '" + shapeType
+                        + "' with data: " + scanner.nextLine());
+            }
+        }
+    }
+
+    /*
      * method: render
      * purpose: Draw to the display until it closes
      */
@@ -87,6 +116,7 @@ public final class Main {
      */
     private void start() {
         try {
+            loadShapes(COORD_FILE);
             createWindow();
             initOpenGL();
             render();
