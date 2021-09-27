@@ -10,11 +10,8 @@
  * It uses glVertex2f to render each shape point-by-point.
  * Pressing ESC will close the window.
  */
-package nbaron_cs4450_hw1;
+package cs4450_project;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.util.Scanner;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
@@ -42,7 +39,7 @@ public final class Main {
     private void createWindow() throws LWJGLException {
         Display.setFullscreen(false);
         Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
-        Display.setTitle("Test OpenGL");
+        Display.setTitle("CS4450 Project");
         Display.create();
     }
 
@@ -57,31 +54,6 @@ public final class Main {
         glOrtho(0, WIDTH, 0, HEIGHT, 1, -1);
         glMatrixMode(GL_MODELVIEW);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-    }
-
-    /*
-     * method: loadShapes
-     * purpose: load the list of Shapes from a given file
-     */
-    private void loadShapes(String path) throws FileNotFoundException {
-        Scanner scanner = new Scanner(new File(path));
-        while (scanner.hasNext()) {
-            char shapeType = scanner.next(".").charAt(0);
-            switch (shapeType) {
-                case 'l':
-                    System.out.println("Line: " + scanner.nextLine());
-                    break;
-                case 'c':
-                    System.out.println("Circle: " + scanner.nextLine());
-                    break;
-                case 'e':
-                    System.out.println("Ellipse: " + scanner.nextLine());
-                    break;
-                default:
-                    System.out.println("Unknown type '" + shapeType
-                        + "' with data: " + scanner.nextLine());
-            }
-        }
     }
 
     /*
@@ -116,7 +88,6 @@ public final class Main {
      */
     private void start() {
         try {
-            loadShapes(COORD_FILE);
             createWindow();
             initOpenGL();
             render();
