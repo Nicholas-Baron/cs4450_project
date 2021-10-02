@@ -15,14 +15,15 @@ package cs4450_project;
 import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
+import org.lwjgl.util.glu.GLU;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public final class Main {
 
-    private static final String COORD_FILE = "coordinates.txt";
     public static final int HEIGHT = 480;
     public static final int WIDTH = 640;
+    private final Cube cube;
 
     /*
      * constructor
@@ -30,6 +31,7 @@ public final class Main {
      * and ensure only this class can construct itself.
      */
     private Main() {
+        cube = new Cube(0, 0, 0, 1);
     }
 
     /*
@@ -49,9 +51,15 @@ public final class Main {
      */
     private void initOpenGL() {
         glClearColor(0, 0, 0, 0);
+        glClearDepth(1);
+        glEnable(GL_DEPTH_TEST);
+        glDepthFunc(GL_LEQUAL);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        glOrtho(0, WIDTH, 0, HEIGHT, 1, -1);
+        GLU.gluPerspective(45,
+            WIDTH / (float) HEIGHT,
+            0.1f,
+            100);
         glMatrixMode(GL_MODELVIEW);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     }
@@ -65,17 +73,14 @@ public final class Main {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glLoadIdentity();
 
-            glColor3f(1, 1, 0);
             glPointSize(10);
 
-            glBegin(GL_POINTS);
-            {
-                glVertex2f(350, 150);
-                glVertex2f(50, 50);
-            }
-            glEnd();
+            // TODO: Apply transforms from camera.
+            glTranslatef(0, 0, -5);
+            cube.draw();
 
             Display.update();
+            Display.sync(60);
         } catch (Exception e) {
         }
 
