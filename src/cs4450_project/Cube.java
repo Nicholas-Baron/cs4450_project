@@ -38,30 +38,35 @@ public class Cube {
             glVertex3f(x, y + size, z);
         }
         { // Back
+            glColor3f(1, 0, 0);
             glVertex3f(x, y, z + size);
             glVertex3f(x + size, y, z + size);
             glVertex3f(x + size, y + size, z + size);
             glVertex3f(x, y + size, z + size);
         }
         { // Left
+            glColor3f(0, 1, 0);
             glVertex3f(x, y, z);
             glVertex3f(x, y, z + size);
             glVertex3f(x, y + size, z + size);
             glVertex3f(x, y + size, z);
         }
         { // Right
+            glColor3f(1, 0, 1);
             glVertex3f(x + size, y, z);
             glVertex3f(x + size, y, z + size);
             glVertex3f(x + size, y + size, z + size);
             glVertex3f(x + size, y + size, z);
         }
         { // Top
+            glColor3f(1, 1, 1);
             glVertex3f(x, y + size, z);
             glVertex3f(x + size, y + size, z);
             glVertex3f(x + size, y + size, z + size);
             glVertex3f(x, y + size, z + size);
         }
         { // Bottom
+            glColor3f(0, 1, 1);
             glVertex3f(x, y, z);
             glVertex3f(x + size, y, z);
             glVertex3f(x + size, y, z + size);
