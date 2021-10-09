@@ -15,7 +15,7 @@ import static org.lwjgl.opengl.GL11.*;
 public class Cube {
 
     private float size, x, y, z;
-
+    
     // method: constructor
     // purpose: initialize the cube
     // with the point (x, y, z) at its bottom-left corner.

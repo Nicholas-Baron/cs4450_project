@@ -1,6 +1,6 @@
 /*
  * file: Main.java
- * author: N. Baron
+ * author: N. Baron, I. Quintanilla
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Program 1
@@ -13,6 +13,7 @@
 package cs4450_project;
 
 import org.lwjgl.LWJGLException;
+import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
@@ -24,6 +25,9 @@ public final class Main {
     public static final int HEIGHT = 480;
     public static final int WIDTH = 640;
     private final Cube cube;
+    
+    private FPCameraController fp= new FPCameraController(0f, 0f, 0f);
+    private DisplayMode displayMode;
 
     /*
      * constructor
@@ -40,7 +44,18 @@ public final class Main {
      */
     private void createWindow() throws LWJGLException {
         Display.setFullscreen(false);
-        Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
+	DisplayMode d[] = Display.getAvailableDisplayModes();
+	for(int i = 0; i < d.length; i++){
+	    if(d[i].getWidth() == 640
+	       && d[i].getHeight() == 480
+	       && d[i].getBitsPerPixel() == 32) {
+		
+		displayMode = d[i];
+		break;
+	    }
+	}
+	
+        Display.setDisplayMode(displayMode);
         Display.setTitle("CS4450 Project");
         Display.create();
     }
@@ -49,17 +64,17 @@ public final class Main {
      * method: initOpenGL
      * purpose: Initialize the rest of OpenGL once the display is opened.
      */
-    private void initOpenGL() {
-        glClearColor(0, 0, 0, 0);
+    private void initGL() {
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClearDepth(1);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        GLU.gluPerspective(45,
-            WIDTH / (float) HEIGHT,
+        GLU.gluPerspective(100.0f,
+            (float)displayMode.getWidth()/(float)displayMode.getHeight(),
             0.1f,
-            100);
+            300.0f);
         glMatrixMode(GL_MODELVIEW);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
     }
@@ -69,7 +84,7 @@ public final class Main {
      * purpose: Draw to the display until it closes
      */
     private void render() {
-        while (!Display.isCloseRequested()) try {
+        while (!Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) && !Display.isCloseRequested()) try {
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             glLoadIdentity();
 
@@ -94,8 +109,8 @@ public final class Main {
     private void start() {
         try {
             createWindow();
-            initOpenGL();
-            render();
+            initGL();
+            fp.gameLoop();
         } catch (Exception e) {
             e.printStackTrace();
         }
