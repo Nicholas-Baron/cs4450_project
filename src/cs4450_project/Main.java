@@ -4,16 +4,14 @@
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Program 1
- * date last modified: 8/23/2021
+ * date last modified: 10/9/2021
  *
- * purpose: This program reads a coordinates.txt file and renders it in LWJGL.
- * It uses glVertex2f to render each shape point-by-point.
+ * purpose: This program renders a cube demo.
  * Pressing ESC will close the window.
  */
 package cs4450_project;
 
 import org.lwjgl.LWJGLException;
-import org.lwjgl.input.Keyboard;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
@@ -24,10 +22,9 @@ public final class Main {
 
     public static final int HEIGHT = 480;
     public static final int WIDTH = 640;
-    private final Cube cube;
-    
-    private FPCameraController fp= new FPCameraController(0f, 0f, 0f);
+
     private DisplayMode displayMode;
+    private final FPCameraController fp;
 
     /*
      * constructor
@@ -35,7 +32,7 @@ public final class Main {
      * and ensure only this class can construct itself.
      */
     private Main() {
-        cube = new Cube(0, 0, 0, 1);
+        fp = new FPCameraController(0f, 0f, 0f);
     }
 
     /*
@@ -44,17 +41,17 @@ public final class Main {
      */
     private void createWindow() throws LWJGLException {
         Display.setFullscreen(false);
-	DisplayMode d[] = Display.getAvailableDisplayModes();
-	for(int i = 0; i < d.length; i++){
-	    if(d[i].getWidth() == 640
-	       && d[i].getHeight() == 480
-	       && d[i].getBitsPerPixel() == 32) {
-		
-		displayMode = d[i];
-		break;
-	    }
-	}
-	
+        for (DisplayMode d : Display.getAvailableDisplayModes()) {
+            if (d.getWidth() == WIDTH
+                && d.getHeight() == HEIGHT
+                && d.getBitsPerPixel() == 32) {
+                displayMode = d;
+                break;
+            }
+        }
+        if (displayMode == null) {
+            displayMode = new DisplayMode(WIDTH, HEIGHT);
+        }
         Display.setDisplayMode(displayMode);
         Display.setTitle("CS4450 Project");
         Display.create();
@@ -72,34 +69,11 @@ public final class Main {
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         GLU.gluPerspective(100.0f,
-            (float)displayMode.getWidth()/(float)displayMode.getHeight(),
+            displayMode.getWidth() / (float) displayMode.getHeight(),
             0.1f,
             300.0f);
         glMatrixMode(GL_MODELVIEW);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-    }
-
-    /*
-     * method: render
-     * purpose: Draw to the display until it closes
-     */
-    private void render() {
-        while (!Keyboard.isKeyDown(Keyboard.KEY_ESCAPE) && !Display.isCloseRequested()) try {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glLoadIdentity();
-
-            glPointSize(10);
-
-            // TODO: Apply transforms from camera.
-            glTranslatef(0, 0, -5);
-            cube.draw();
-
-            Display.update();
-            Display.sync(60);
-        } catch (Exception e) {
-        }
-
-        Display.destroy();
     }
 
     /**
