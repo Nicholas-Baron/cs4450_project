@@ -1,6 +1,6 @@
 /*
  * file: Vector3Float.java
- * author: Isaac Quintanilla
+ * author: I. Quintanilla, N. Baron
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Project
