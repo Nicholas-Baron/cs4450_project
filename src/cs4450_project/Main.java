@@ -1,13 +1,12 @@
 /*
  * file: Main.java
- * author: N. Baron
+ * author: N. Baron, I. Quintanilla
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Program 1
- * date last modified: 8/23/2021
+ * date last modified: 10/9/2021
  *
- * purpose: This program reads a coordinates.txt file and renders it in LWJGL.
- * It uses glVertex2f to render each shape point-by-point.
+ * purpose: This program renders a cube demo.
  * Pressing ESC will close the window.
  */
 package cs4450_project;
@@ -23,7 +22,9 @@ public final class Main {
 
     public static final int HEIGHT = 480;
     public static final int WIDTH = 640;
-    private final Cube cube;
+
+    private DisplayMode displayMode;
+    private final FPCameraController fp;
 
     /*
      * constructor
@@ -31,7 +32,7 @@ public final class Main {
      * and ensure only this class can construct itself.
      */
     private Main() {
-        cube = new Cube(0, 0, 0, 1);
+        fp = new FPCameraController(0f, 0f, 0f);
     }
 
     /*
@@ -40,7 +41,18 @@ public final class Main {
      */
     private void createWindow() throws LWJGLException {
         Display.setFullscreen(false);
-        Display.setDisplayMode(new DisplayMode(WIDTH, HEIGHT));
+        for (DisplayMode d : Display.getAvailableDisplayModes()) {
+            if (d.getWidth() == WIDTH
+                && d.getHeight() == HEIGHT
+                && d.getBitsPerPixel() == 32) {
+                displayMode = d;
+                break;
+            }
+        }
+        if (displayMode == null) {
+            displayMode = new DisplayMode(WIDTH, HEIGHT);
+        }
+        Display.setDisplayMode(displayMode);
         Display.setTitle("CS4450 Project");
         Display.create();
     }
@@ -49,42 +61,19 @@ public final class Main {
      * method: initOpenGL
      * purpose: Initialize the rest of OpenGL once the display is opened.
      */
-    private void initOpenGL() {
-        glClearColor(0, 0, 0, 0);
+    private void initGL() {
+        glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
         glClearDepth(1);
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
-        GLU.gluPerspective(45,
-            WIDTH / (float) HEIGHT,
+        GLU.gluPerspective(100.0f,
+            displayMode.getWidth() / (float) displayMode.getHeight(),
             0.1f,
-            100);
+            300.0f);
         glMatrixMode(GL_MODELVIEW);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
-    }
-
-    /*
-     * method: render
-     * purpose: Draw to the display until it closes
-     */
-    private void render() {
-        while (!Display.isCloseRequested()) try {
-            glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-            glLoadIdentity();
-
-            glPointSize(10);
-
-            // TODO: Apply transforms from camera.
-            glTranslatef(0, 0, -5);
-            cube.draw();
-
-            Display.update();
-            Display.sync(60);
-        } catch (Exception e) {
-        }
-
-        Display.destroy();
     }
 
     /**
@@ -94,8 +83,8 @@ public final class Main {
     private void start() {
         try {
             createWindow();
-            initOpenGL();
-            render();
+            initGL();
+            fp.gameLoop();
         } catch (Exception e) {
             e.printStackTrace();
         }
