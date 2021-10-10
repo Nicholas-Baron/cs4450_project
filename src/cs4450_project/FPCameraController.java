@@ -31,7 +31,7 @@ public class FPCameraController {
     // 3D vector to store the camera's position
     private final Vector3f position;
     // the rotation around the Y axis of the camera
-    private float yaw ;
+    private float yaw;
 
     /*
      * method: constructor
