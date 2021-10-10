@@ -1,12 +1,13 @@
 /*
  * file: FPCameraController.java
- * author: I. Quintanilla, N. Baron
+ * author: I. Quintanilla, N. Baron, D. Faizi
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Project
- * date last modified: 10/9/2021
+ * date last modified: 10/10/2021
  *
- * purpose: This class will hold our camera's position in 3D space.
+ * purpose: This class will hold our camera's position in 3D space and allow
+ * the camera to move in different directions by keyboard input.
  */
 package cs4450_project;
 
@@ -30,7 +31,7 @@ public class FPCameraController {
     // 3D vector to store the camera's position
     private final Vector3f position;
     // the rotation around the Y axis of the camera
-    private float yaw;
+    private float yaw ;
 
     /*
      * method: constructor
@@ -46,7 +47,7 @@ public class FPCameraController {
 
     /*
      * method: gameLoop
-     * purpose: handle main game logic
+     * purpose: handle main game logic, this includes movement controls.
      */
     public void gameLoop() {
         FPCameraController camera = new FPCameraController(0, 0, 0);
@@ -76,7 +77,40 @@ public class FPCameraController {
             camera.yaw(dx * mouseSensitivity);
             // control camera pitch from y movement from the mouse
             camera.pitch(dy * mouseSensitivity);
-
+            
+            //The following assigns keyboard controls to move the 
+            //camera in a specific direction:
+            //move forward
+            if (Keyboard.isKeyDown(Keyboard.KEY_W))
+            {
+                camera.walkForward(movementSpeed);
+            }
+            //move backwards
+            if (Keyboard.isKeyDown(Keyboard.KEY_S))
+            {
+                camera.walkBackwards(movementSpeed);
+            }
+            //strafe left 
+            if (Keyboard.isKeyDown(Keyboard.KEY_A))
+            {
+                camera.strafeLeft(movementSpeed);
+            }
+            //strafe right 
+            if (Keyboard.isKeyDown(Keyboard.KEY_D))
+            {
+                camera.strafeRight(movementSpeed);
+            }
+            //moves up
+            if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
+            {
+                camera.moveUp(movementSpeed);
+            }
+            //moves down
+            if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) 
+            {
+                camera.moveDown(movementSpeed);
+            }
+            
             // set the modelview matrix back to the identity
             glLoadIdentity();
             // look through the camera before anything is drawn
@@ -124,5 +158,71 @@ public class FPCameraController {
      */
     public void yaw(float amount) {
         yaw += amount;
+    }
+    
+    /*
+     * method: walkForward
+     * purpose: This moves the camera forward relative to its current rotation
+     */
+    public void walkForward(float distance)
+    {
+        float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
+        position.x -= xOffset;
+        position.z += zOffset;
+    }
+    
+    /*
+     * method: walkBackwards
+     * purpose: moves the camera backward relative to its current rotation (yaw)
+     */
+    public void walkBackwards(float distance)
+    {
+        float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
+        position.x += xOffset;
+        position.z -= zOffset;
+    }
+    
+    /*
+     * method: strafeLeft
+     * purpose: strafes the camera left relative to its current rotation (yaw)
+     */
+    public void strafeLeft(float distance)
+    {
+        float xOffset = distance * (float)Math.sin(Math.toRadians(yaw-90));
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw-90));
+        position.x -= xOffset;
+        position.z += zOffset;
+    }
+    
+    /*
+     * method: strafeRight
+     * purpose: strafes the camera right relative to its current rotation (yaw)
+     */
+    public void strafeRight(float distance)
+    {
+        float xOffset = distance * (float)Math.sin(Math.toRadians(yaw+90));
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw+90));
+        position.x -= xOffset;
+        position.z += zOffset;
+    }
+    
+    /*
+     * method: moveUp
+     * purpose: moves the camera up relative to its current rotation (yaw)
+     */
+    public void moveUp(float distance)
+    {
+        position.y -= distance;
+    }
+    
+    /*
+     * method: moveDown
+     * purpose: moves the camera down relative to its current rotation
+     */
+    public void moveDown(float distance)
+    {
+        position.y += distance;
     }
 }
