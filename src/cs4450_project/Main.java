@@ -1,10 +1,10 @@
 /*
  * file: Main.java
- * author: N. Baron, I. Quintanilla
+ * author: N. Baron, I. Quintanilla, D. Faizi
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Program 1
- * date last modified: 10/9/2021
+ * date last modified: 10/10/2021
  *
  * purpose: This program renders a cube demo.
  * Pressing ESC will close the window.
