@@ -1,6 +1,6 @@
 /*
  * file: Simplex.java
- * author: I. Quintanilla, N. Baron
+ * author: T. Diaz, I. Quintanilla, N. Baron
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Project
