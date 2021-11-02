@@ -21,11 +21,9 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class FPCameraController {
 
-    private final Vector3f lPosition;
-
     private final Chunk chunk;
 
-    private Vector3Float me;
+    private final Vector3f lPosition;
 
     // the rotation around the X axis of the camera
     private float pitch;
@@ -144,6 +142,22 @@ public class FPCameraController {
         // translate to the position vector's location
         glTranslatef(position.x, position.y, position.z);
     }
+    /*
+     * method: moveDown
+     * purpose: moves the camera down relative to its current rotation
+     */
+    public void moveDown(float distance)
+    {
+        position.y += distance;
+    }
+    /*
+     * method: moveUp
+     * purpose: moves the camera up relative to its current rotation (yaw)
+     */
+    public void moveUp(float distance)
+    {
+        position.y -= distance;
+    }
 
     /*
      * method: pitch
@@ -153,37 +167,6 @@ public class FPCameraController {
         pitch -= amount;
     }
 
-    /*
-     * method: yaw
-     * purpose: increment the camera's current yaw rotation
-     */
-    public void yaw(float amount) {
-        yaw += amount;
-    }
-
-    /*
-     * method: walkForward
-     * purpose: This moves the camera forward relative to its current rotation
-     */
-    public void walkForward(float distance)
-    {
-        float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
-        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
-        position.x -= xOffset;
-        position.z += zOffset;
-    }
-
-    /*
-     * method: walkBackwards
-     * purpose: moves the camera backward relative to its current rotation (yaw)
-     */
-    public void walkBackwards(float distance)
-    {
-        float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
-        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
-        position.x += xOffset;
-        position.z -= zOffset;
-    }
 
     /*
      * method: strafeLeft
@@ -208,22 +191,33 @@ public class FPCameraController {
         position.x -= xOffset;
         position.z += zOffset;
     }
-
     /*
-     * method: moveUp
-     * purpose: moves the camera up relative to its current rotation (yaw)
+     * method: walkBackwards
+     * purpose: moves the camera backward relative to its current rotation (yaw)
      */
-    public void moveUp(float distance)
+    public void walkBackwards(float distance)
     {
-        position.y -= distance;
+        float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
+        position.x += xOffset;
+        position.z -= zOffset;
     }
-
     /*
-     * method: moveDown
-     * purpose: moves the camera down relative to its current rotation
+     * method: walkForward
+     * purpose: This moves the camera forward relative to its current rotation
      */
-    public void moveDown(float distance)
+    public void walkForward(float distance)
     {
-        position.y += distance;
+        float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
+        position.x -= xOffset;
+        position.z += zOffset;
+    }
+    /*
+     * method: yaw
+     * purpose: increment the camera's current yaw rotation
+     */
+    public void yaw(float amount) {
+        yaw += amount;
     }
 }
