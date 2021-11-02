@@ -12,7 +12,7 @@ package cs4450_project;
 
 public enum BlockType {
 
-    Grass(0), Sand(1), Stone(2), Water(3), Dirt(4), Bedrock(5);
+    Grass(0), Sand(1), Water(2), Dirt(3), Stone(4), Bedrock(5);
 
     private int blockID;
 
