@@ -14,13 +14,14 @@ package cs4450_project;
 import java.nio.FloatBuffer;
 import java.util.Random;
 import org.lwjgl.BufferUtils;
+
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
 
-public class Chunk
+public final class Chunk
 {
     static final int CHUNK_SIZE = 30;
     static final int CUBE_LENGTH = 2;
@@ -29,6 +30,7 @@ public class Chunk
     private int VBOColorHandle;
     private int StartX, StartY, StartZ;
     private Random r;
+    private SimplexNoise simplexNoise;
     private int VBOTextureHandle;
     private Texture texture;
 
@@ -51,7 +53,7 @@ public class Chunk
     // purpose: This method modifies our chunk after it has
     // been initially created.
     public void rebuildMesh(float startX, float startY, float startZ)
-    {    
+    {
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
         VBOTextureHandle = glGenBuffers();
@@ -72,6 +74,10 @@ public class Chunk
             {
                 for(float y = 0; y < CHUNK_SIZE; y++)
                 {
+                    Block b = Blocks[(int) x][(int) y][(int) z];
+
+                    if(!b.isActive()) continue;
+
                     VertexPositionData.put(createCube((float) 
                             (startX+ x * CUBE_LENGTH),
                             (float)(y*CUBE_LENGTH+(int)(CHUNK_SIZE*.8)),
@@ -80,16 +86,12 @@ public class Chunk
                             VertexColorData.put(
                                     createCubeVertexCol(
                                             getCubeColor(
-                                                    Blocks[(int) x]
-                                                          [(int) y]
-                                                          [(int) z])));
+                                                    b)));
                             VertexTextureData.put(
                                     createTexCube(
                                             (float) 0,
                                             (float)0,
-                                            Blocks[(int)(x)]
-                                                  [(int) (y)]
-                                                  [(int) (z)]));
+                                            b));
 
                 }
             }
@@ -391,25 +393,27 @@ public class Chunk
             System.out.print("ER-ROAR!");
         }
         r = new Random();
-        Blocks = new 
+        simplexNoise = new SimplexNoise(CHUNK_SIZE * 3 / 2, 0.175, r.nextInt());
+        Blocks = new
                 Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < CHUNK_SIZE; x++)
         {
-            for (int y = 0; y < CHUNK_SIZE; y++) 
+            for (int y = 0; y < CHUNK_SIZE; y++)
             {
                 for (int z = 0; z < CHUNK_SIZE; z++)
                 {
-                    if(r.nextFloat()>0.7f)
+                    float blockType = r.nextFloat();
+                    if(blockType>0.7f)
                     {
                         Blocks[x][y][z] = new
                         Block(BlockType.Grass);
                     }
-                    else if(r.nextFloat()>0.4f)
+                    else if(blockType>0.4f)
                     {
-                        Blocks[x][y][z] = new 
+                        Blocks[x][y][z] = new
                             Block(BlockType.Dirt);
                     }
-                    else if(r.nextFloat()>0.2f)
+                    else if(blockType>0.2f)
                     {
                         Blocks[x][y][z] = new
                             Block(BlockType.Water);
@@ -420,6 +424,8 @@ public class Chunk
                             //this is the default block type, right now set to dirt
                             Block(BlockType.Dirt);
                     }
+                    double heightNoise = Math.abs(simplexNoise.getNoise(x, z) * CHUNK_SIZE);
+                    Blocks[x][y][z].setActive(heightNoise + CHUNK_SIZE / 2 >= y);
                 }
             }
         }
@@ -431,5 +437,5 @@ public class Chunk
         StartZ= startZ;
         rebuildMesh(startX, startY, startZ);
     }
-}           
-        
+}
+

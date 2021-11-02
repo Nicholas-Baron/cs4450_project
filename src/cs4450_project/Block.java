@@ -28,6 +28,12 @@ public class Block {
         return type.getID();
     }
 
+    // method: getType
+    // purpose: return the type of the block
+    public BlockType getType(){
+        return this.type;
+    }
+
     // method: isActive
     // purpose: return whether the block is active
     public boolean isActive() {
