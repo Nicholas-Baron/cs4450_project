@@ -29,13 +29,9 @@ public final class Chunk {
     public static final int CUBE_LENGTH = 2;
 
     private final Block[][][] Blocks;
-    private final int StartX;
-    private final int StartY;
-    private final int StartZ;
     private int VBOColorHandle;
     private int VBOTextureHandle;
     private int VBOVertexHandle;
-    private final Random r;
     private final SimplexNoise simplexNoise;
     private Texture texture;
 
@@ -48,7 +44,7 @@ public final class Chunk {
         } catch (Exception e) {
             System.out.print("ER-ROAR!");
         }
-        r = new Random();
+        Random r = new Random();
         simplexNoise = new SimplexNoise(CHUNK_SIZE * 2, 0.25, r.nextInt());
         Blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < CHUNK_SIZE; x++) {
@@ -71,12 +67,6 @@ public final class Chunk {
                 }
             }
         }
-        VBOColorHandle = glGenBuffers();
-        VBOVertexHandle = glGenBuffers();
-        VBOTextureHandle = glGenBuffers();
-        StartX = startX;
-        StartY = startY;
-        StartZ = startZ;
         rebuildMesh(startX, startY, startZ);
     }
 
