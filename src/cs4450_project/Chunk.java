@@ -6,7 +6,7 @@
  * assignment: Project
  * date last modified: 11/1/2021
  *
- * purpose: This class represents a chunk in 3D space. Each block, within 
+ * purpose: This class represents a chunk in 3D space. Each block, within
  * the chunk, is given a texture from the terrian.png file.
  */
 package cs4450_project;
@@ -14,12 +14,12 @@ package cs4450_project;
 import java.nio.FloatBuffer;
 import java.util.Random;
 import org.lwjgl.BufferUtils;
-
-import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
 import org.newdawn.slick.opengl.Texture;
 import org.newdawn.slick.opengl.TextureLoader;
 import org.newdawn.slick.util.ResourceLoader;
+
+import static org.lwjgl.opengl.GL11.*;
+import static org.lwjgl.opengl.GL15.*;
 
 public final class Chunk
 {
@@ -37,7 +37,7 @@ public final class Chunk
     private Texture texture;
 
     // method: render
-    // purpose: This method draws the chunks (blocks with a texture). 
+    // purpose: This method draws the chunks (blocks with a texture).
     public void render()
     {
         glPushMatrix();
@@ -51,7 +51,7 @@ public final class Chunk
         glDrawArrays(GL_QUADS, 0, CUBES_PER_BLOCK * 24);
         glPopMatrix();
     }
-    
+
     // method: rebuildMesh
     // purpose: This method modifies our chunk after it has
     // been initially created.
@@ -62,11 +62,11 @@ public final class Chunk
 
         int bufferSize = CUBES_PER_BLOCK * 6 * 12;
         VBOTextureHandle = glGenBuffers();
-        FloatBuffer VertexPositionData = 
+        FloatBuffer VertexPositionData =
                 BufferUtils.createFloatBuffer(bufferSize);
         FloatBuffer VertexColorData =
                 BufferUtils.createFloatBuffer(bufferSize);
-        
+
         //the following among our other Float Buffers before our for loops
         FloatBuffer VertexTextureData =
         BufferUtils.createFloatBuffer(bufferSize);
@@ -79,11 +79,11 @@ public final class Chunk
                         continue;
                     }
 
-                    VertexPositionData.put(createCube((float) 
+                    VertexPositionData.put(createCube((float)
                             (startX+ x * CUBE_LENGTH),
                             (float)(y*CUBE_LENGTH+(int)(CHUNK_SIZE*.8)),
                             (float) (startZ+ z * CUBE_LENGTH)));
-                            
+
                             VertexColorData.put(
                                     createCubeVertexCol(
                                             getCubeColor(
@@ -97,7 +97,7 @@ public final class Chunk
                 }
             }
         }
-        
+
         VertexColorData.flip();
         VertexPositionData.flip();
         VertexTextureData.flip();
@@ -111,9 +111,9 @@ public final class Chunk
         glBufferData(GL_ARRAY_BUFFER, VertexTextureData,GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
     }
-    
+
     // method: createCubeVertexCol
-    // purpose: This method specifies what color the individual 
+    // purpose: This method specifies what color the individual
     // cube should be.
     private float[] createCubeVertexCol(float[] CubeColorArray)
     {
@@ -123,7 +123,7 @@ public final class Chunk
         }
         return cubeColors;
     }
-    
+
     // method: createCube
     // purpose: This method creates a cube at the specified location.
     public static float[] createCube(float x, float y, float z)
@@ -161,25 +161,25 @@ public final class Chunk
             x + offset, y -offset, z -CUBE_LENGTH,
             x + offset, y -offset, z };
     }
-    
+
     // method: getCubeColor
     // purpose: This method returns a color for the cube.
-    private float[] getCubeColor(Block block) 
+    private float[] getCubeColor(Block block)
     {
         return new float[] { 1, 1, 1 };
     }
-    
+
     // method: createTexCube
     // purpose: This method creates the textures
-    // (from the  terrian.png file) and adds the specified texture 
+    // (from the  terrian.png file) and adds the specified texture
     //(depending on the case) onto all 6 sides of the block.
-    public static float[] createTexCube(float x, float y, Block block) 
+    public static float[] createTexCube(float x, float y, Block block)
     {
         float offset = (1024f/16)/1024f;
-        switch (block.getID())
+        switch (block.getType())
         {
-            case 0:
-                return new float[] 
+            case Grass: // 0 in the original code
+                return new float[]
                 {
                 // BOTTOM QUAD(DOWN=+Y)
                 x + offset*3, y + offset*10,
@@ -211,8 +211,8 @@ public final class Chunk
                 x + offset*4, y + offset*0,
                 x + offset*4, y + offset*1,
                 x + offset*3, y + offset*1};
-            case 1:
-                return new float[] 
+            case Sand: // 1
+                return new float[]
                 {
                 // BOTTOM QUAD(DOWN=+Y)
                 x + offset*3, y + offset*10,
@@ -244,8 +244,8 @@ public final class Chunk
                 x + offset*4, y + offset*0,
                 x + offset*4, y + offset*1,
                 x + offset*3, y + offset*1};
-            case 3:
-                return new float[] 
+            case Dirt: // 3
+                return new float[]
                 {
                 // BOTTOM QUAD(DOWN=+Y)
                 x + offset*3, y + offset*10,
@@ -277,8 +277,8 @@ public final class Chunk
                 x + offset*4, y + offset*0,
                 x + offset*4, y + offset*1,
                 x + offset*3, y + offset*1};
-            case 4:
-                return new float[] 
+            case Stone: // 4
+                return new float[]
                 {
                 // BOTTOM QUAD(DOWN=+Y)
                 x + offset*3, y + offset*10,
@@ -310,8 +310,8 @@ public final class Chunk
                 x + offset*4, y + offset*0,
                 x + offset*4, y + offset*1,
                 x + offset*3, y + offset*1};
-            case 5:
-                return new float[] 
+            case Bedrock: // 5
+                return new float[]
                 {
                 // BOTTOM QUAD(DOWN=+Y)
                 x + offset*3, y + offset*10,
@@ -344,7 +344,7 @@ public final class Chunk
                 x + offset*4, y + offset*1,
                 x + offset*3, y + offset*1};
         }
-                return new float[] 
+                return new float[]
                 {
                 // BOTTOM QUAD(DOWN=+Y)
                 x + offset*3, y + offset*10,
@@ -377,7 +377,7 @@ public final class Chunk
                 x + offset*4, y + offset*1,
                 x + offset*3, y + offset*1};
     }
-    
+
     // method: Chunk
     // purpose: This method is the constructor for our chunk class.
     public Chunk(int startX, int startY, int startZ)
@@ -385,7 +385,7 @@ public final class Chunk
         try{texture = TextureLoader.getTexture("PNG",
             ResourceLoader.getResourceAsStream("res/terrain.png"));
         }
-        
+
         catch(Exception e)
         {
             System.out.print("ER-ROAR!");
@@ -417,7 +417,7 @@ public final class Chunk
         }
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
-        VBOTextureHandle = glGenBuffers(); 
+        VBOTextureHandle = glGenBuffers();
         StartX = startX;
         StartY = startY;
         StartZ = startZ;
