@@ -21,7 +21,6 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class FPCameraController {
 
-    //private final Cube cube;
     private final Vector3f lPosition;
 
     private final Chunk chunk;
