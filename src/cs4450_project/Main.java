@@ -6,7 +6,7 @@
  * assignment: Program 1
  * date last modified: 10/10/2021
  *
- * purpose: This program renders a cube demo.
+ * purpose: This program renders a chunk demo.
  * Pressing ESC will close the window.
  */
 package cs4450_project;
@@ -67,6 +67,8 @@ public final class Main {
         glEnableClientState(GL_VERTEX_ARRAY);
         glEnableClientState(GL_COLOR_ARRAY);
         glEnable(GL_DEPTH_TEST);
+        glEnable(GL_TEXTURE_2D);
+        glEnableClientState(GL_TEXTURE_COORD_ARRAY);
         glLoadIdentity();
         GLU.gluPerspective(100.0f,
             displayMode.getWidth() / (float) displayMode.getHeight(),
@@ -82,10 +84,13 @@ public final class Main {
      */
     private void start() 
     {
+        
         try {
-           fp = new FPCameraController(0f, 0f, 0f); 
             createWindow();
             initGL();
+
+            fp = new FPCameraController(0f, 0f, 0f); 
+            fp.gameLoop();
             
         } catch (Exception e) {
             e.printStackTrace();
