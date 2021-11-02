@@ -391,7 +391,7 @@ public final class Chunk
             System.out.print("ER-ROAR!");
         }
         r = new Random();
-        simplexNoise = new SimplexNoise(CHUNK_SIZE * 3 / 2, 0.175, r.nextInt());
+        simplexNoise = new SimplexNoise(CHUNK_SIZE * 2, 0.25, r.nextInt());
         Blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < CHUNK_SIZE; x++)
         {
@@ -410,7 +410,7 @@ public final class Chunk
                         //this is the default block type, right now set to dirt
                         Blocks[x][y][z] = new Block(BlockType.Dirt);
                     }
-                    double heightNoise = Math.abs(simplexNoise.getNoise(x, z) * CHUNK_SIZE);
+                    double heightNoise = simplexNoise.getNoise(x, z) * CHUNK_SIZE;
                     Blocks[x][y][z].setActive(heightNoise + CHUNK_SIZE / 2 >= y);
                 }
             }
