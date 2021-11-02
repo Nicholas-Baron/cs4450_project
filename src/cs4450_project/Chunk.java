@@ -23,9 +23,11 @@ import org.newdawn.slick.util.ResourceLoader;
 
 public final class Chunk
 {
-    static final int CHUNK_SIZE = 30;
-    static final int CUBE_LENGTH = 2;
-    private Block[][][] Blocks;
+    public static final int CHUNK_SIZE = 30;
+    public static final int CUBE_LENGTH = 2;
+    private static final int CUBES_PER_BLOCK = CHUNK_SIZE * CHUNK_SIZE * CHUNK_SIZE;
+
+    private final Block[][][] Blocks;
     private int VBOVertexHandle;
     private int VBOColorHandle;
     private int StartX, StartY, StartZ;
@@ -42,10 +44,11 @@ public final class Chunk
         glBindBuffer(GL_ARRAY_BUFFER, VBOTextureHandle);
         glBindTexture(GL_TEXTURE_2D, 1);
         glTexCoordPointer(2,GL_FLOAT,0,0L);
-        glBindBuffer(GL_ARRAY_BUFFER,VBOVertexHandle);
+        glBindBuffer(GL_ARRAY_BUFFER, VBOVertexHandle);
         glVertexPointer(3, GL_FLOAT, 0, 0L);
-        glBindBuffer(GL_ARRAY_BUFFER,VBOColorHandle);glColorPointer(3,GL_FLOAT, 0, 0L);
-        glDrawArrays(GL_QUADS, 0,CHUNK_SIZE *CHUNK_SIZE*CHUNK_SIZE * 24);
+        glBindBuffer(GL_ARRAY_BUFFER, VBOColorHandle);
+        glColorPointer(3, GL_FLOAT, 0, 0L);
+        glDrawArrays(GL_QUADS, 0, CUBES_PER_BLOCK * 24);
         glPopMatrix();
     }
     
@@ -56,27 +59,25 @@ public final class Chunk
     {
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
+
+        int bufferSize = CUBES_PER_BLOCK * 6 * 12;
         VBOTextureHandle = glGenBuffers();
         FloatBuffer VertexPositionData = 
-                BufferUtils.createFloatBuffer((CHUNK_SIZE *
-                        CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
+                BufferUtils.createFloatBuffer(bufferSize);
         FloatBuffer VertexColorData =
-                BufferUtils.createFloatBuffer((CHUNK_SIZE*
-                        CHUNK_SIZE * CHUNK_SIZE) * 6 * 12);
+                BufferUtils.createFloatBuffer(bufferSize);
         
         //the following among our other Float Buffers before our for loops
         FloatBuffer VertexTextureData =
-        BufferUtils.createFloatBuffer((CHUNK_SIZE*
-                        CHUNK_SIZE *CHUNK_SIZE)* 6 * 12);
-        for (float x = 0; x < CHUNK_SIZE; x += 1)
-        {
-            for (float z = 0; z < CHUNK_SIZE; z += 1)
-            {
-                for(float y = 0; y < CHUNK_SIZE; y++)
-                {
+        BufferUtils.createFloatBuffer(bufferSize);
+        for (float x = 0; x < CHUNK_SIZE; ++x) {
+            for (float z = 0; z < CHUNK_SIZE; ++z) {
+                for (float y = 0; y < CHUNK_SIZE; y++) {
                     Block b = Blocks[(int) x][(int) y][(int) z];
 
-                    if(!b.isActive()) continue;
+                    if (!b.isActive()) {
+                        continue;
+                    }
 
                     VertexPositionData.put(createCube((float) 
                             (startX+ x * CUBE_LENGTH),
@@ -100,13 +101,11 @@ public final class Chunk
         VertexColorData.flip();
         VertexPositionData.flip();
         VertexTextureData.flip();
-        glBindBuffer(GL_ARRAY_BUFFER,
-                VBOVertexHandle);
-        glBufferData(GL_ARRAY_BUFFER, VertexPositionData,
-                GL_STATIC_DRAW);
+        glBindBuffer(GL_ARRAY_BUFFER, VBOVertexHandle);
+        glBufferData(GL_ARRAY_BUFFER, VertexPositionData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ARRAY_BUFFER, VBOColorHandle);
-        glBufferData(GL_ARRAY_BUFFER, VertexColorData,GL_STATIC_DRAW);
+        glBufferData(GL_ARRAY_BUFFER, VertexColorData, GL_STATIC_DRAW);
         glBindBuffer(GL_ARRAY_BUFFER, 0);
         glBindBuffer(GL_ARRAY_BUFFER, VBOTextureHandle);
         glBufferData(GL_ARRAY_BUFFER, VertexTextureData,GL_STATIC_DRAW);
@@ -118,10 +117,9 @@ public final class Chunk
     // cube should be.
     private float[] createCubeVertexCol(float[] CubeColorArray)
     {
-        float[] cubeColors= new float[CubeColorArray.length* 4 * 6];
-        for (int i= 0; i< cubeColors.length; i++)
-        {
-            cubeColors[i] = CubeColorArray[i%CubeColorArray.length];
+        float[] cubeColors = new float[CubeColorArray.length * 4 * 6];
+        for (int i = 0; i < cubeColors.length; i++) {
+            cubeColors[i] = CubeColorArray[i % CubeColorArray.length];
         }
         return cubeColors;
     }
@@ -394,8 +392,7 @@ public final class Chunk
         }
         r = new Random();
         simplexNoise = new SimplexNoise(CHUNK_SIZE * 3 / 2, 0.175, r.nextInt());
-        Blocks = new
-                Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
+        Blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < CHUNK_SIZE; x++)
         {
             for (int y = 0; y < CHUNK_SIZE; y++)
@@ -403,26 +400,15 @@ public final class Chunk
                 for (int z = 0; z < CHUNK_SIZE; z++)
                 {
                     float blockType = r.nextFloat();
-                    if(blockType>0.7f)
-                    {
-                        Blocks[x][y][z] = new
-                        Block(BlockType.Grass);
-                    }
-                    else if(blockType>0.4f)
-                    {
-                        Blocks[x][y][z] = new
-                            Block(BlockType.Dirt);
-                    }
-                    else if(blockType>0.2f)
-                    {
-                        Blocks[x][y][z] = new
-                            Block(BlockType.Water);
-                    }
-                    else
-                    {
-                        Blocks[x][y][z] = new
-                            //this is the default block type, right now set to dirt
-                            Block(BlockType.Dirt);
+                    if (blockType > 0.7f) {
+                        Blocks[x][y][z] = new Block(BlockType.Grass);
+                    } else if (blockType > 0.4f) {
+                        Blocks[x][y][z] = new Block(BlockType.Dirt);
+                    } else if (blockType > 0.2f) {
+                        Blocks[x][y][z] = new Block(BlockType.Water);
+                    } else {
+                        //this is the default block type, right now set to dirt
+                        Blocks[x][y][z] = new Block(BlockType.Dirt);
                     }
                     double heightNoise = Math.abs(simplexNoise.getNoise(x, z) * CHUNK_SIZE);
                     Blocks[x][y][z].setActive(heightNoise + CHUNK_SIZE / 2 >= y);
@@ -432,9 +418,9 @@ public final class Chunk
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
         VBOTextureHandle = glGenBuffers(); 
-        StartX= startX;
-        StartY= startY;
-        StartZ= startZ;
+        StartX = startX;
+        StartY = startY;
+        StartZ = startZ;
         rebuildMesh(startX, startY, startZ);
     }
 }
