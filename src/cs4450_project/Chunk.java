@@ -51,12 +51,18 @@ public final class Chunk {
             for (int y = 0; y < CHUNK_SIZE; y++) {
                 for (int z = 0; z < CHUNK_SIZE; z++) {
                     float blockType = r.nextFloat();
-                    if (blockType > 0.7f) {
+                    if (blockType > 0.95f) {
                         Blocks[x][y][z] = new Block(BlockType.Grass);
-                    } else if (blockType > 0.4f) {
+                    } else if (blockType > 0.85f) {
                         Blocks[x][y][z] = new Block(BlockType.Dirt);
-                    } else if (blockType > 0.2f) {
+                    } else if (blockType > 0.7f) {
+                        Blocks[x][y][z] = new Block(BlockType.Sand);
+                    } else if (blockType > 0.5f) {
                         Blocks[x][y][z] = new Block(BlockType.Water);
+                    } else if (blockType > 0.4f) {
+                        Blocks[x][y][z] = new Block(BlockType.Stone);
+                    } else if (blockType > 0.2f) {
+                        Blocks[x][y][z] = new Block(BlockType.Bedrock);
                     } else {
                         //this is the default block type, right now set to dirt
                         Blocks[x][y][z] = new Block(BlockType.Dirt);
@@ -266,35 +272,35 @@ public final class Chunk {
             case Dirt:
                 return new float[]{
                     // BOTTOM QUAD(DOWN=+Y)
-                    x + offset * 3, y + offset * 2,
-                    x + offset * 2, y + offset * 2,
-                    x + offset * 2, y + offset * 1,
                     x + offset * 3, y + offset * 1,
+                    x + offset * 2, y + offset * 1,
+                    x + offset * 2, y + offset * 0,
+                    x + offset * 3, y + offset * 0,
                     // TOP!
-                    x + offset * 3, y + offset * 2,
-                    x + offset * 2, y + offset * 2,
-                    x + offset * 2, y + offset * 1,
                     x + offset * 3, y + offset * 1,
+                    x + offset * 2, y + offset * 1,
+                    x + offset * 2, y + offset * 0,
+                    x + offset * 3, y + offset * 0,
                     // FRONT QUAD
-                    x + offset * 3, y + offset * 2,
-                    x + offset * 2, y + offset * 2,
-                    x + offset * 2, y + offset * 1,
                     x + offset * 3, y + offset * 1,
+                    x + offset * 2, y + offset * 1,
+                    x + offset * 2, y + offset * 0,
+                    x + offset * 3, y + offset * 0,
                     // BACK QUAD
-                    x + offset * 3, y + offset * 2,
-                    x + offset * 2, y + offset * 2,
-                    x + offset * 2, y + offset * 1,
                     x + offset * 3, y + offset * 1,
+                    x + offset * 2, y + offset * 1,
+                    x + offset * 2, y + offset * 0,
+                    x + offset * 3, y + offset * 0,
                     // LEFT QUAD
-                    x + offset * 3, y + offset * 2,
-                    x + offset * 2, y + offset * 2,
-                    x + offset * 2, y + offset * 1,
                     x + offset * 3, y + offset * 1,
-                    // RIGHT QUAD
-                    x + offset * 3, y + offset * 2,
-                    x + offset * 2, y + offset * 2,
                     x + offset * 2, y + offset * 1,
-                    x + offset * 3, y + offset * 1};
+                    x + offset * 2, y + offset * 0,
+                    x + offset * 3, y + offset * 0,
+                    // RIGHT QUAD
+                    x + offset * 3, y + offset * 1,
+                    x + offset * 2, y + offset * 1,
+                    x + offset * 2, y + offset * 0,
+                    x + offset * 3, y + offset * 0,};
             case Water: // 3
                 return new float[]{
                     // BOTTOM QUAD(DOWN=+Y)
