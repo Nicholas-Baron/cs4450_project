@@ -24,16 +24,13 @@ public final class Main {
     public static final int WIDTH = 640;
 
     private DisplayMode displayMode;
-    private final FPCameraController fp;
+    private FPCameraController fp;
 
     /*
      * constructor
      * purpose: initialize instance variables
      * and ensure only this class can construct itself.
      */
-    private Main() {
-        fp = new FPCameraController(0f, 0f, 0f);
-    }
 
     /*
      * method: createWindow
@@ -67,6 +64,9 @@ public final class Main {
         glEnable(GL_DEPTH_TEST);
         glDepthFunc(GL_LEQUAL);
         glMatrixMode(GL_PROJECTION);
+        glEnableClientState(GL_VERTEX_ARRAY);
+        glEnableClientState(GL_COLOR_ARRAY);
+        glEnable(GL_DEPTH_TEST);
         glLoadIdentity();
         GLU.gluPerspective(100.0f,
             displayMode.getWidth() / (float) displayMode.getHeight(),
@@ -80,11 +80,13 @@ public final class Main {
      * method: start
      * purpose: start each component of the program.
      */
-    private void start() {
+    private void start() 
+    {
         try {
+           fp = new FPCameraController(0f, 0f, 0f); 
             createWindow();
             initGL();
-            fp.gameLoop();
+            
         } catch (Exception e) {
             e.printStackTrace();
         }

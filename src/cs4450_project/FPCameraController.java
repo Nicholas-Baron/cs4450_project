@@ -21,9 +21,11 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class FPCameraController {
 
-    private final Cube cube;
+    //private final Cube cube;
     private final Vector3f lPosition;
-
+    
+    private final Chunk chunk;
+    
     private Vector3Float me;
 
     // the rotation around the X axis of the camera
@@ -37,20 +39,23 @@ public class FPCameraController {
      * method: constructor
      * purpose: initialize the FPCamera
      */
-    public FPCameraController(float x, float y, float z) {
+    public FPCameraController(float x, float y, float z) 
+    {
         position = new Vector3f(x, y, z);
         lPosition = new Vector3f(0, 15, 0);
+        //this.chunk = c;
         yaw = 0;
         pitch = 0;
-        cube = new Cube(0, 0, -5, 2);
+        chunk = new Chunk((int)x, (int)y, (int)z);
     }
 
     /*
      * method: gameLoop
      * purpose: handle main game logic, this includes movement controls.
      */
-    public void gameLoop() {
-        FPCameraController camera = new FPCameraController(0, 0, 0);
+    public void gameLoop() 
+    {
+        //FPCameraController camera = new FPCameraController(0, 0, 0);
         float dx = 0.0f;
         float dy = 0.0f;
         float dt = 0.0f; // length of a frame
@@ -74,51 +79,51 @@ public class FPCameraController {
             dy = Mouse.getDY();
 
             // control camera yaw from x movement from the mouse
-            camera.yaw(dx * mouseSensitivity);
+            yaw(dx * mouseSensitivity);
             // control camera pitch from y movement from the mouse
-            camera.pitch(dy * mouseSensitivity);
+            pitch(dy * mouseSensitivity);
             
             //The following assigns keyboard controls to move the 
             //camera in a specific direction:
             //move forward
             if (Keyboard.isKeyDown(Keyboard.KEY_W))
             {
-                camera.walkForward(movementSpeed);
+                walkForward(movementSpeed);
             }
             //move backwards
             if (Keyboard.isKeyDown(Keyboard.KEY_S))
             {
-                camera.walkBackwards(movementSpeed);
+                walkBackwards(movementSpeed);
             }
             //strafe left 
             if (Keyboard.isKeyDown(Keyboard.KEY_A))
             {
-                camera.strafeLeft(movementSpeed);
+                strafeLeft(movementSpeed);
             }
             //strafe right 
             if (Keyboard.isKeyDown(Keyboard.KEY_D))
             {
-                camera.strafeRight(movementSpeed);
+                strafeRight(movementSpeed);
             }
             //moves up
             if (Keyboard.isKeyDown(Keyboard.KEY_SPACE))
             {
-                camera.moveUp(movementSpeed);
+                moveUp(movementSpeed);
             }
             //moves down
             if (Keyboard.isKeyDown(Keyboard.KEY_LSHIFT)) 
             {
-                camera.moveDown(movementSpeed);
+                moveDown(movementSpeed);
             }
             
             // set the modelview matrix back to the identity
             glLoadIdentity();
             // look through the camera before anything is drawn
-            camera.lookThrough();
+            lookThrough();
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
             // draw scene here
-            cube.draw();
+            chunk.render();
 
             // draw the buffer to the screen
             Display.update();
