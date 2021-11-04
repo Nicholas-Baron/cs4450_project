@@ -48,28 +48,30 @@ public final class Chunk {
         simplexNoise = new SimplexNoise(CHUNK_SIZE * 2, 0.25, r.nextInt());
         Blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < CHUNK_SIZE; x++) {
-            for (int y = 0; y < CHUNK_SIZE; y++) {
-                for (int z = 0; z < CHUNK_SIZE; z++) {
-                    float blockType = r.nextFloat();
-                    if (blockType > 0.95f) {
-                        Blocks[x][y][z] = new Block(BlockType.Grass);
-                    } else if (blockType > 0.85f) {
-                        Blocks[x][y][z] = new Block(BlockType.Dirt);
-                    } else if (blockType > 0.7f) {
-                        Blocks[x][y][z] = new Block(BlockType.Sand);
-                    } else if (blockType > 0.5f) {
-                        Blocks[x][y][z] = new Block(BlockType.Water);
-                    } else if (blockType > 0.4f) {
-                        Blocks[x][y][z] = new Block(BlockType.Stone);
-                    } else if (blockType > 0.2f) {
+            for (int z = 0; z < CHUNK_SIZE; z++) {
+                double height = simplexNoise.getNoise(x, z) * CHUNK_SIZE
+                    + CHUNK_SIZE / 2;
+                for (int y = 0; y < CHUNK_SIZE; y++) {
+                    if (y == 0) {
                         Blocks[x][y][z] = new Block(BlockType.Bedrock);
+                    } else if (y == Math.floor(height)) {
+                        // grass, sand, or water
+                        float blockType = r.nextFloat();
+                        if (blockType <= 0.33) {
+                            Blocks[x][y][z] = new Block(BlockType.Grass);
+                        } else if (blockType <= 0.66) {
+                            Blocks[x][y][z] = new Block(BlockType.Sand);
+                        } else {
+                            Blocks[x][y][z] = new Block(BlockType.Water);
+                        }
                     } else {
-                        //this is the default block type, right now set to dirt
-                        Blocks[x][y][z] = new Block(BlockType.Dirt);
+                        // somewhere in the middle.
+                        // dirt or stone
+                        Blocks[x][y][z] = new Block(
+                            r.nextBoolean() ? BlockType.Dirt : BlockType.Stone
+                        );
                     }
-                    double heightNoise = simplexNoise.getNoise(x, z)
-                        * CHUNK_SIZE;
-                    Blocks[x][y][z].setActive(heightNoise + CHUNK_SIZE / 2 >= y);
+                    Blocks[x][y][z].setActive(y <= height);
                 }
             }
         }
