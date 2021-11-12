@@ -4,9 +4,9 @@
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Program 1
- * date last modified: 10/10/2021
+ * date last modified: 11/11/2021
  *
- * purpose: This program renders a chunk demo.
+ * purpose: This program renders a chunk demo with lighting.
  * Pressing ESC will close the window.
  */
 package cs4450_project;
@@ -15,6 +15,8 @@ import org.lwjgl.LWJGLException;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.opengl.DisplayMode;
 import org.lwjgl.util.glu.GLU;
+import java.nio.FloatBuffer;
+import org.lwjgl.BufferUtils;
 
 import static org.lwjgl.opengl.GL11.*;
 
@@ -25,12 +27,9 @@ public final class Main {
 
     private DisplayMode displayMode;
     private FPCameraController fp;
+    private FloatBuffer lightPosition;
+    private FloatBuffer whiteLight;
 
-    /*
-     * constructor
-     * purpose: initialize instance variables
-     * and ensure only this class can construct itself.
-     */
 
     /*
      * method: createWindow
@@ -69,6 +68,21 @@ public final class Main {
         glEnable(GL_DEPTH_TEST);
         glEnable(GL_TEXTURE_2D);
         glEnableClientState(GL_TEXTURE_COORD_ARRAY);
+        
+        initLightArrays();
+        //set light source position
+        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+        //sets specular light
+        glLight(GL_LIGHT0, GL_SPECULAR, whiteLight);
+        //sets diffuse light
+        glLight(GL_LIGHT0, GL_DIFFUSE, whiteLight);
+        //sets ambient light
+        glLight(GL_LIGHT0, GL_AMBIENT, whiteLight);
+        //this enables our lighting
+        glEnable(GL_LIGHTING);
+        //enables light0
+        glEnable(GL_LIGHT0);
+        
         glLoadIdentity();
         GLU.gluPerspective(100.0f,
             displayMode.getWidth() / (float) displayMode.getHeight(),
@@ -95,6 +109,21 @@ public final class Main {
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+    
+    /**
+     * method: initLightArrays
+     * purpose: This method is the controller of our light source
+     * within our program. Also, determines the position of the light source.
+     */
+    private void initLightArrays() {
+        //keeps track of light source location.
+        lightPosition = BufferUtils.createFloatBuffer(4);
+        //light source position
+        lightPosition.put(0.0f).put(0.0f).put(0.0f).put(1.0f).flip();
+        // Indicate the RGB values of our light source.
+        whiteLight = BufferUtils.createFloatBuffer(4);
+        whiteLight.put(1.0f).put(1.0f).put(1.0f).put(0.0f).flip();
     }
 
     /**

@@ -4,7 +4,7 @@
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Project
- * date last modified: 10/10/2021
+ * date last modified: 11/11/2021
  *
  * purpose: This class will hold our camera's position in 3D space and allow
  * the camera to move in different directions by keyboard input.
@@ -16,7 +16,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
-
+import java.nio.FloatBuffer;
+import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
 
 public class FPCameraController {
@@ -39,7 +40,11 @@ public class FPCameraController {
     public FPCameraController(float x, float y, float z)
     {
         position = new Vector3f(x, y, z);
-        lPosition = new Vector3f(0, 15, 0);
+        lPosition = new Vector3f(
+            Chunk.CHUNK_SIZE / 2 * Chunk.CUBE_LENGTH,
+            Chunk.CHUNK_SIZE * 2 * Chunk.CUBE_LENGTH,
+            (Chunk.CHUNK_SIZE / 2 + 10) * Chunk.CUBE_LENGTH
+        );
         //this.chunk = c;
         yaw = 0;
         pitch = 0;
@@ -116,6 +121,11 @@ public class FPCameraController {
             glLoadIdentity();
             // look through the camera before anything is drawn
             lookThrough();
+            //handles light position
+            FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+            lightPosition.put(lPosition.x).put(
+            lPosition.y).put(lPosition.z).put(1.0f).flip();
+            glLight(GL_LIGHT0, GL_POSITION, lightPosition);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             // draw scene here
             chunk.render();
@@ -132,7 +142,7 @@ public class FPCameraController {
      * purpose: translates and rotates the matrix
      * so that it looks though the camera
      */
-    public void lookThrough() {
+    public void lookThrough() {   
         // rotate the pitch around the X axis
         glRotatef(pitch, 1.0f, 0.0f, 0.0f);
 
@@ -140,8 +150,9 @@ public class FPCameraController {
         glRotatef(yaw, 0.0f, 1.0f, 0.0f);
 
         // translate to the position vector's location
-        glTranslatef(position.x, position.y, position.z);
+        glTranslatef(position.x, position.y, position.z); 
     }
+    
     /*
      * method: moveDown
      * purpose: moves the camera down relative to its current rotation
@@ -150,6 +161,7 @@ public class FPCameraController {
     {
         position.y += distance;
     }
+    
     /*
      * method: moveUp
      * purpose: moves the camera up relative to its current rotation (yaw)
@@ -187,10 +199,11 @@ public class FPCameraController {
     public void strafeRight(float distance)
     {
         float xOffset = distance * (float)Math.sin(Math.toRadians(yaw+90));
-        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw+90));
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw+90));    
         position.x -= xOffset;
         position.z += zOffset;
     }
+    
     /*
      * method: walkBackwards
      * purpose: moves the camera backward relative to its current rotation (yaw)
@@ -198,10 +211,11 @@ public class FPCameraController {
     public void walkBackwards(float distance)
     {
         float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
-        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));       
         position.x += xOffset;
-        position.z -= zOffset;
+        position.z -= zOffset;  
     }
+    
     /*
      * method: walkForward
      * purpose: This moves the camera forward relative to its current rotation
@@ -209,10 +223,11 @@ public class FPCameraController {
     public void walkForward(float distance)
     {
         float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
-        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));      
         position.x -= xOffset;
-        position.z += zOffset;
+        position.z += zOffset; 
     }
+    
     /*
      * method: yaw
      * purpose: increment the camera's current yaw rotation
