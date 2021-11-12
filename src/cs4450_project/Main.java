@@ -4,7 +4,7 @@
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Program 1
- * date last modified: 11/10/2021
+ * date last modified: 11/11/2021
  *
  * purpose: This program renders a chunk demo with lighting.
  * Pressing ESC will close the window.
@@ -30,11 +30,6 @@ public final class Main {
     private FloatBuffer lightPosition;
     private FloatBuffer whiteLight;
 
-    /*
-     * constructor
-     * purpose: initialize instance variables
-     * and ensure only this class can construct itself.
-     */
 
     /*
      * method: createWindow
