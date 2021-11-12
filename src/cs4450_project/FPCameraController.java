@@ -4,7 +4,7 @@
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Project
- * date last modified: 10/10/2021
+ * date last modified: 11/11/2021
  *
  * purpose: This class will hold our camera's position in 3D space and allow
  * the camera to move in different directions by keyboard input.
@@ -16,7 +16,8 @@ import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
-
+import java.nio.FloatBuffer;
+import org.lwjgl.BufferUtils;
 import static org.lwjgl.opengl.GL11.*;
 
 public class FPCameraController {
@@ -133,6 +134,12 @@ public class FPCameraController {
      * so that it looks though the camera
      */
     public void lookThrough() {
+        
+        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+        lightPosition.put(lPosition.x).put(
+        lPosition.y).put(lPosition.z).put(1.0f).flip();
+        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+        
         // rotate the pitch around the X axis
         glRotatef(pitch, 1.0f, 0.0f, 0.0f);
 
@@ -141,6 +148,8 @@ public class FPCameraController {
 
         // translate to the position vector's location
         glTranslatef(position.x, position.y, position.z);
+        
+        
     }
     /*
      * method: moveDown
@@ -174,10 +183,21 @@ public class FPCameraController {
      */
     public void strafeLeft(float distance)
     {
+        
+        
         float xOffset = distance * (float)Math.sin(Math.toRadians(yaw-90));
         float zOffset = distance * (float)Math.cos(Math.toRadians(yaw-90));
+        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+        
+        
+//        lightPosition.put(lPosition.x-=xOffset).put(
+//        lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+        
         position.x -= xOffset;
         position.z += zOffset;
+        
+        
     }
 
     /*
@@ -188,8 +208,16 @@ public class FPCameraController {
     {
         float xOffset = distance * (float)Math.sin(Math.toRadians(yaw+90));
         float zOffset = distance * (float)Math.cos(Math.toRadians(yaw+90));
+        
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x-=xOffset).put(
+//        lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+        
         position.x -= xOffset;
         position.z += zOffset;
+        
+        
     }
     /*
      * method: walkBackwards
@@ -199,8 +227,16 @@ public class FPCameraController {
     {
         float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
         float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
+        
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x-=xOffset).put(
+//        lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+        
         position.x += xOffset;
         position.z -= zOffset;
+        
+        
     }
     /*
      * method: walkForward
@@ -210,8 +246,16 @@ public class FPCameraController {
     {
         float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
         float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
+        
+//        FloatBuffer lightPosition = BufferUtils.createFloatBuffer(4);
+//        lightPosition.put(lPosition.x-=xOffset).put(
+//        lPosition.y).put(lPosition.z+=zOffset).put(1.0f).flip();
+//        glLight(GL_LIGHT0, GL_POSITION, lightPosition);
+        
         position.x -= xOffset;
         position.z += zOffset;
+        
+        
     }
     /*
      * method: yaw
