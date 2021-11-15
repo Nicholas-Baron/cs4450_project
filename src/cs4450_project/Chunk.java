@@ -28,11 +28,13 @@ public final class Chunk {
         * CHUNK_SIZE;
     public static final int CUBE_LENGTH = 2;
 
+    private static SimplexNoise simplexNoise;
+
     private final Block[][][] Blocks;
     private int VBOColorHandle;
     private int VBOTextureHandle;
     private int VBOVertexHandle;
-    private final SimplexNoise simplexNoise;
+
     private Texture texture;
 
     // method: Chunk
@@ -45,7 +47,10 @@ public final class Chunk {
             System.out.print("ER-ROAR!");
         }
         Random r = new Random();
-        simplexNoise = new SimplexNoise(CHUNK_SIZE * 2, 0.25, r.nextInt());
+
+        if (simplexNoise == null)
+            simplexNoise = new SimplexNoise(CHUNK_SIZE * 2, 0.25, r.nextInt());
+
         Blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
