@@ -37,7 +37,7 @@ public final class Chunk {
 
     // method: Chunk
     // purpose: This method is the constructor for our chunk class.
-    public Chunk(int startX, int startY, int startZ) {
+    public Chunk(int startX, int startZ) {
         try {
             texture = TextureLoader.getTexture("PNG",
                 ResourceLoader.getResourceAsStream("res/terrain.png"));
@@ -75,7 +75,7 @@ public final class Chunk {
                 }
             }
         }
-        rebuildMesh(startX, startY, startZ);
+        rebuildMesh(startX, startZ);
     }
 
 // method: createCubeVertexCol
@@ -98,7 +98,7 @@ public final class Chunk {
     // method: rebuildMesh
     // purpose: This method modifies our chunk after it has
     // been initially created.
-    public void rebuildMesh(float startX, float startY, float startZ) {
+    public void rebuildMesh(float startX, float startZ) {
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
         VBOTextureHandle = glGenBuffers();

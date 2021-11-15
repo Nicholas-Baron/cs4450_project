@@ -11,13 +11,14 @@
  */
 package cs4450_project;
 
+import java.nio.FloatBuffer;
+import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
 import org.lwjgl.input.Mouse;
 import org.lwjgl.opengl.Display;
 import org.lwjgl.util.vector.Vector3f;
-import java.nio.FloatBuffer;
-import org.lwjgl.BufferUtils;
+
 import static org.lwjgl.opengl.GL11.*;
 
 public class FPCameraController {
@@ -48,7 +49,7 @@ public class FPCameraController {
         //this.chunk = c;
         yaw = 0;
         pitch = 0;
-        chunk = new Chunk((int)x, (int)y, (int)z);
+        chunk = new Chunk(0, 0);
     }
 
     /*
@@ -142,7 +143,7 @@ public class FPCameraController {
      * purpose: translates and rotates the matrix
      * so that it looks though the camera
      */
-    public void lookThrough() {   
+    public void lookThrough() {
         // rotate the pitch around the X axis
         glRotatef(pitch, 1.0f, 0.0f, 0.0f);
 
@@ -150,9 +151,9 @@ public class FPCameraController {
         glRotatef(yaw, 0.0f, 1.0f, 0.0f);
 
         // translate to the position vector's location
-        glTranslatef(position.x, position.y, position.z); 
+        glTranslatef(position.x, position.y, position.z);
     }
-    
+
     /*
      * method: moveDown
      * purpose: moves the camera down relative to its current rotation
@@ -161,7 +162,7 @@ public class FPCameraController {
     {
         position.y += distance;
     }
-    
+
     /*
      * method: moveUp
      * purpose: moves the camera up relative to its current rotation (yaw)
@@ -199,11 +200,11 @@ public class FPCameraController {
     public void strafeRight(float distance)
     {
         float xOffset = distance * (float)Math.sin(Math.toRadians(yaw+90));
-        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw+90));    
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw+90));
         position.x -= xOffset;
         position.z += zOffset;
     }
-    
+
     /*
      * method: walkBackwards
      * purpose: moves the camera backward relative to its current rotation (yaw)
@@ -211,11 +212,11 @@ public class FPCameraController {
     public void walkBackwards(float distance)
     {
         float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
-        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));       
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
         position.x += xOffset;
-        position.z -= zOffset;  
+        position.z -= zOffset;
     }
-    
+
     /*
      * method: walkForward
      * purpose: This moves the camera forward relative to its current rotation
@@ -223,11 +224,11 @@ public class FPCameraController {
     public void walkForward(float distance)
     {
         float xOffset = distance * (float)Math.sin(Math.toRadians(yaw));
-        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));      
+        float zOffset = distance * (float)Math.cos(Math.toRadians(yaw));
         position.x -= xOffset;
-        position.z += zOffset; 
+        position.z += zOffset;
     }
-    
+
     /*
      * method: yaw
      * purpose: increment the camera's current yaw rotation
