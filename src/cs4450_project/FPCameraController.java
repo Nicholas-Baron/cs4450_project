@@ -12,6 +12,7 @@
 package cs4450_project;
 
 import java.nio.FloatBuffer;
+import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.Sys;
 import org.lwjgl.input.Keyboard;
@@ -23,7 +24,7 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class FPCameraController {
 
-    private final Chunk chunk;
+    private final ArrayList<Chunk> chunks;
 
     private final Vector3f lPosition;
 
@@ -49,7 +50,8 @@ public class FPCameraController {
         //this.chunk = c;
         yaw = 0;
         pitch = 0;
-        chunk = new Chunk(0, 0);
+        chunks = new ArrayList<>();
+        regenerateChunks();
     }
 
     /*
@@ -129,7 +131,7 @@ public class FPCameraController {
             glLight(GL_LIGHT0, GL_POSITION, lightPosition);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             // draw scene here
-            chunk.render();
+            chunks.forEach(Chunk::render);
             // draw the buffer to the screen
             Display.update();
             Display.sync(60);
@@ -180,6 +182,11 @@ public class FPCameraController {
         pitch -= amount;
     }
 
+    // method: regenerateChunks
+    // purpose: add new chunks relative to the current camera position
+    private void regenerateChunks() {
+        chunks.add(new Chunk(0, 0));
+    }
 
     /*
      * method: strafeLeft
