@@ -97,6 +97,15 @@ public final class Chunk {
             && posZ <= z && z < posZ + CHUNK_SIZE;
     }
 
+    // purpose: getBlockDistance
+    // method: returns the 2D distance
+    // on the xz plane from the center of the chunk
+    public double getBlockDistance(int x, int z){
+        int xDist = (posX + CHUNK_SIZE / 2) + x;
+        int zDist = (posZ + CHUNK_SIZE / 2) + z;
+        return Math.sqrt(xDist * xDist + zDist * zDist);
+    }
+
 // method: createCubeVertexCol
     // purpose: This method specifies what color the individual
     // cube should be.

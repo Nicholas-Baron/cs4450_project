@@ -140,6 +140,16 @@ public class FPCameraController {
             Display.update();
             Display.sync(60);
 
+            {
+                final int playerX = (int) Math.floor(position.x
+                   / Chunk.CUBE_LENGTH);
+                final int playerZ = (int) Math.floor(position.z
+                   / Chunk.CUBE_LENGTH);
+
+                chunks.removeIf(chunk -> {
+                    return chunk.getBlockDistance(playerX, playerZ) > 250;
+                });
+            }
         }
         Display.destroy();
     }
