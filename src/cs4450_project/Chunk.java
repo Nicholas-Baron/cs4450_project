@@ -27,6 +27,7 @@ public final class Chunk {
     private static final int CUBES_PER_BLOCK = CHUNK_SIZE * CHUNK_SIZE
         * CHUNK_SIZE;
     public static final int CUBE_LENGTH = 2;
+    public static final int CHUNK_LENGTH = CHUNK_SIZE * CUBE_LENGTH;
 
     private static SimplexNoise simplexNoise;
 

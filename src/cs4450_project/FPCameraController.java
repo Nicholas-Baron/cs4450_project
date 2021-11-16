@@ -119,6 +119,10 @@ public class FPCameraController {
             {
                 moveDown(movementSpeed);
             }
+            // regenerate chunks
+            if (Keyboard.isKeyDown(Keyboard.KEY_R)) {
+                regenerateChunks();
+            }
 
             // set the modelview matrix back to the identity
             glLoadIdentity();
@@ -186,12 +190,15 @@ public class FPCameraController {
     // purpose: add new chunks relative to the current camera position
     private void regenerateChunks() {
 
-        final int CHUNK_RADIUS = 5;
+        chunks.clear();
+        final int CHUNK_RADIUS = 3;
+        final int playerX = (int) Math.floor(position.x / Chunk.CHUNK_LENGTH);
+        final int playerZ = (int) Math.floor(position.z / Chunk.CHUNK_LENGTH);
         for(int xOff = -CHUNK_RADIUS; xOff <= CHUNK_RADIUS; ++xOff){
             for (int zOff = -CHUNK_RADIUS; zOff <= CHUNK_RADIUS; ++zOff) {
-                int xPosition = xOff * Chunk.CHUNK_SIZE;
-                int zPosition = zOff * Chunk.CHUNK_SIZE;
-                
+                int xPosition = (xOff - playerX) * Chunk.CHUNK_SIZE;
+                int zPosition = (zOff - playerZ) * Chunk.CHUNK_SIZE;
+
                 Chunk c = new Chunk(xPosition, zPosition);
                 chunks.add(c);
             }
