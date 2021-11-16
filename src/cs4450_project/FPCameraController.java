@@ -24,6 +24,8 @@ import static org.lwjgl.opengl.GL11.*;
 
 public class FPCameraController {
 
+    private static final int CHUNK_RADIUS = 2;
+
     private final ArrayList<Chunk> chunks;
 
     private final Vector3f lPosition;
@@ -64,9 +66,13 @@ public class FPCameraController {
         float dy = 0.0f;
         float dt = 0.0f; // length of a frame
         float lastTime = 0.0f; // when the last frame was
+        long lastChunkRegen = 0;
         long time = 0;
         float mouseSensitivity = 0.09f;
         float movementSpeed = .35f;
+        int chunksRemoved = 0;
+
+        ArrayList<Chunk> toRemove = new ArrayList<>();
 
         // hide the mouse
         Mouse.setGrabbed(true);
@@ -135,21 +141,36 @@ public class FPCameraController {
             glLight(GL_LIGHT0, GL_POSITION, lightPosition);
             glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
             // draw scene here
-            chunks.forEach(Chunk::render);
+            final int playerX = (int) Math.floor(position.x
+                / Chunk.CUBE_LENGTH);
+            final int playerZ = (int) Math.floor(position.z
+                / Chunk.CUBE_LENGTH);
+            for(Chunk chunk : chunks){
+                chunk.render();
+                if (chunk.getBlockDistance(playerX, playerZ)
+                    > (CHUNK_RADIUS * Chunk.CHUNK_SIZE * 5) / 3)
+                    toRemove.add(chunk);
+            }
             // draw the buffer to the screen
             Display.update();
-            Display.sync(60);
 
-            {
-                final int playerX = (int) Math.floor(position.x
-                   / Chunk.CUBE_LENGTH);
-                final int playerZ = (int) Math.floor(position.z
-                   / Chunk.CUBE_LENGTH);
+            if(!toRemove.isEmpty()){
+                int oldChunkCount = chunks.size();
+                chunks.removeAll(toRemove);
+                toRemove.clear();
+                chunksRemoved += oldChunkCount - chunks.size();
 
-                chunks.removeIf(chunk -> {
-                    return chunk.getBlockDistance(playerX, playerZ) > 250;
-                });
+                if(chunksRemoved >= CHUNK_RADIUS * CHUNK_RADIUS
+                    && System.currentTimeMillis() - lastChunkRegen > 2000){
+                    // 3 chunks were lost.
+                    // add some new ones
+                    regenerateChunks();
+                    lastChunkRegen = System.currentTimeMillis();
+                    chunksRemoved = 0;
+                }
             }
+
+            Display.sync(60);
         }
         Display.destroy();
     }
@@ -200,8 +221,6 @@ public class FPCameraController {
     // purpose: add new chunks relative to the current camera position
     private void regenerateChunks() {
 
-        chunks.clear();
-        final int CHUNK_RADIUS = 3;
         final int playerX = (int) Math.floor(position.x / Chunk.CHUNK_LENGTH);
         final int playerZ = (int) Math.floor(position.z / Chunk.CHUNK_LENGTH);
         for(int xOff = -CHUNK_RADIUS; xOff <= CHUNK_RADIUS; ++xOff){
@@ -209,8 +228,12 @@ public class FPCameraController {
                 int xPosition = (xOff - playerX) * Chunk.CHUNK_SIZE;
                 int zPosition = (zOff - playerZ) * Chunk.CHUNK_SIZE;
 
-                Chunk c = new Chunk(xPosition, zPosition);
-                chunks.add(c);
+                if (chunks.stream().anyMatch(
+                    chunk -> chunk.containsBlock(xPosition, zPosition))) {
+                    continue;
+                }
+
+                chunks.add(new Chunk(xPosition, zPosition));
             }
         }
     }

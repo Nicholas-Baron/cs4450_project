@@ -36,14 +36,14 @@ public final class Chunk {
     private int VBOTextureHandle;
     private int VBOVertexHandle;
 
-    private Texture texture;
+    private static Texture texture;
 
     private final int posX, posZ;
 
     // method: Chunk
     // purpose: This method is the constructor for our chunk class.
     public Chunk(int startX, int startZ) {
-        try {
+        if (texture == null) try {
             texture = TextureLoader.getTexture("PNG",
                 ResourceLoader.getResourceAsStream("res/terrain.png"));
         } catch (Exception e) {
