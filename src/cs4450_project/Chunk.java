@@ -38,6 +38,8 @@ public final class Chunk {
 
     private Texture texture;
 
+    private final int posX, posZ;
+
     // method: Chunk
     // purpose: This method is the constructor for our chunk class.
     public Chunk(int startX, int startZ) {
@@ -82,7 +84,17 @@ public final class Chunk {
                 }
             }
         }
+        posX = startX;
+        posZ = startZ;
         rebuildMesh(startX, startZ);
+    }
+
+    // purpose: containsBlock
+    // method: returns whether the x,z coordinate refers to
+    // some block inside this chunk
+    public boolean containsBlock(int x, int z){
+        return posX <= x && x < posX + CHUNK_SIZE
+            && posZ <= z && z < posZ + CHUNK_SIZE;
     }
 
 // method: createCubeVertexCol
