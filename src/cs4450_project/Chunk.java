@@ -27,29 +27,38 @@ public final class Chunk {
     private static final int CUBES_PER_BLOCK = CHUNK_SIZE * CHUNK_SIZE
         * CHUNK_SIZE;
     public static final int CUBE_LENGTH = 2;
+    public static final int CHUNK_LENGTH = CHUNK_SIZE * CUBE_LENGTH;
+
+    private static SimplexNoise simplexNoise;
 
     private final Block[][][] Blocks;
     private int VBOColorHandle;
     private int VBOTextureHandle;
     private int VBOVertexHandle;
-    private final SimplexNoise simplexNoise;
-    private Texture texture;
+
+    private static Texture texture;
+
+    private final int posX, posZ;
 
     // method: Chunk
     // purpose: This method is the constructor for our chunk class.
-    public Chunk(int startX, int startY, int startZ) {
-        try {
+    public Chunk(int startX, int startZ) {
+        if (texture == null) try {
             texture = TextureLoader.getTexture("PNG",
                 ResourceLoader.getResourceAsStream("res/terrain.png"));
         } catch (Exception e) {
             System.out.print("ER-ROAR!");
         }
         Random r = new Random();
-        simplexNoise = new SimplexNoise(CHUNK_SIZE * 2, 0.25, r.nextInt());
+
+        if (simplexNoise == null)
+            simplexNoise = new SimplexNoise(CHUNK_SIZE * 2, 0.25, r.nextInt());
+
         Blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                double height = simplexNoise.getNoise(x, z) * CHUNK_SIZE
+                double height = simplexNoise.getNoise(startX + x, startZ + z)
+                    * CHUNK_SIZE
                     + CHUNK_SIZE / 2;
                 for (int y = 0; y < CHUNK_SIZE; y++) {
                     if (y == 0) {
@@ -75,7 +84,26 @@ public final class Chunk {
                 }
             }
         }
-        rebuildMesh(startX, startY, startZ);
+        posX = startX;
+        posZ = startZ;
+        rebuildMesh(startX, startZ);
+    }
+
+    // purpose: containsBlock
+    // method: returns whether the x,z coordinate refers to
+    // some block inside this chunk
+    public boolean containsBlock(int x, int z){
+        return posX <= x && x < posX + CHUNK_SIZE
+            && posZ <= z && z < posZ + CHUNK_SIZE;
+    }
+
+    // purpose: getBlockDistance
+    // method: returns the 2D distance
+    // on the xz plane from the center of the chunk
+    public double getBlockDistance(int x, int z){
+        int xDist = (posX + CHUNK_SIZE / 2) + x;
+        int zDist = (posZ + CHUNK_SIZE / 2) + z;
+        return Math.sqrt(xDist * xDist + zDist * zDist);
     }
 
 // method: createCubeVertexCol
@@ -98,7 +126,7 @@ public final class Chunk {
     // method: rebuildMesh
     // purpose: This method modifies our chunk after it has
     // been initially created.
-    public void rebuildMesh(float startX, float startY, float startZ) {
+    public void rebuildMesh(float startX, float startZ) {
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
         VBOTextureHandle = glGenBuffers();
@@ -123,9 +151,9 @@ public final class Chunk {
                     }
 
                     VertexPositionData.put(createCube(
-                        startX + x * CUBE_LENGTH,
+                        (startX + x) * CUBE_LENGTH,
                         y * CUBE_LENGTH + CHUNK_SIZE * .8f,
-                        startZ + z * CUBE_LENGTH
+                        (startZ + z) * CUBE_LENGTH
                     ));
                     VertexColorData.put(createCubeVertexCol(getCubeColor(b)));
                     VertexTextureData.put(createTexCube(0, 0, b));
