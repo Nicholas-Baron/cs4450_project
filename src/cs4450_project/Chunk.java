@@ -54,7 +54,8 @@ public final class Chunk {
         Blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
         for (int x = 0; x < CHUNK_SIZE; x++) {
             for (int z = 0; z < CHUNK_SIZE; z++) {
-                double height = simplexNoise.getNoise(x, z) * CHUNK_SIZE
+                double height = simplexNoise.getNoise(startX + x, startZ + z)
+                    * CHUNK_SIZE
                     + CHUNK_SIZE / 2;
                 for (int y = 0; y < CHUNK_SIZE; y++) {
                     if (y == 0) {
@@ -128,9 +129,9 @@ public final class Chunk {
                     }
 
                     VertexPositionData.put(createCube(
-                        startX + x * CUBE_LENGTH,
+                        (startX + x) * CUBE_LENGTH,
                         y * CUBE_LENGTH + CHUNK_SIZE * .8f,
-                        startZ + z * CUBE_LENGTH
+                        (startZ + z) * CUBE_LENGTH
                     ));
                     VertexColorData.put(createCubeVertexCol(getCubeColor(b)));
                     VertexTextureData.put(createTexCube(0, 0, b));

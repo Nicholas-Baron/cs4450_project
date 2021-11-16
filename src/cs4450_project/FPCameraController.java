@@ -189,8 +189,8 @@ public class FPCameraController {
         final int CHUNK_RADIUS = 5;
         for(int xOff = -CHUNK_RADIUS; xOff <= CHUNK_RADIUS; ++xOff){
             for (int zOff = -CHUNK_RADIUS; zOff <= CHUNK_RADIUS; ++zOff) {
-                int xPosition = xOff * Chunk.CHUNK_SIZE * Chunk.CUBE_LENGTH;
-                int zPosition = zOff * Chunk.CHUNK_SIZE * Chunk.CUBE_LENGTH;
+                int xPosition = xOff * Chunk.CHUNK_SIZE;
+                int zPosition = zOff * Chunk.CHUNK_SIZE;
                 
                 Chunk c = new Chunk(xPosition, zPosition);
                 chunks.add(c);
