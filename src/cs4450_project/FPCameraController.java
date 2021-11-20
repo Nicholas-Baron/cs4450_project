@@ -11,6 +11,7 @@
  */
 package cs4450_project;
 
+import static java.lang.Math.PI;
 import java.nio.FloatBuffer;
 import java.util.ArrayList;
 import org.lwjgl.BufferUtils;
@@ -71,6 +72,7 @@ public class FPCameraController {
         float mouseSensitivity = 0.09f;
         float movementSpeed = .35f;
         int chunksRemoved = 0;
+	float sunAngle = 0;
 
         ArrayList<Chunk> toRemove = new ArrayList<>();
 
@@ -171,6 +173,10 @@ public class FPCameraController {
             }
 
             Display.sync(60);
+	    
+	    sunAngle = (float)(2 * PI) / (float)(60 / 5);
+	    lPosition.x += (sunAngle);
+	    lPosition.y += (sunAngle);
         }
         Display.destroy();
     }
