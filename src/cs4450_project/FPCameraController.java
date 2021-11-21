@@ -155,6 +155,11 @@ public class FPCameraController {
             }
             // draw the buffer to the screen
             Display.update();
+	    
+	    // controls angle of light source
+	    sunAngle += (float)(2 * PI) / (60 * 20);
+	    lPosition.x += Math.cos(sunAngle);
+	    lPosition.y += Math.sin(sunAngle);
 
             if(!toRemove.isEmpty()){
                 int oldChunkCount = chunks.size();
@@ -174,9 +179,7 @@ public class FPCameraController {
 
             Display.sync(60);
 	    
-	    sunAngle = (float)(2 * PI) / (float)(60 / 5);
-	    lPosition.x += (sunAngle);
-	    lPosition.y += (sunAngle);
+	    
         }
         Display.destroy();
     }

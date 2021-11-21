@@ -103,7 +103,7 @@ public final class Main {
             createWindow();
             initGL();
 
-            fp = new FPCameraController(0f, 0f, 0f); 
+            fp = new FPCameraController(0f, -100f, 0f); 
             fp.gameLoop();
             
         } catch (Exception e) {
