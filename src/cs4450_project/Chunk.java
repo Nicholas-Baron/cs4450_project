@@ -1,13 +1,15 @@
 /*
  * file: Chunks.java
- * author: D. Faizi
+ * author: D. Faizi, N. Baron
  * class: CS 4450 - Computer Graphics
  *
  * assignment: Project
- * date last modified: 11/1/2021
+ * date last modified: 11/26/2021
  *
  * purpose: This class represents a chunk in 3D space. Each block, within
- * the chunk, is given a texture from the terrian.png file.
+ * the chunk, is given a texture from the terrian.png file. Plant block types
+ * follow the same process, but done separately. Adding lakes/rivers are also 
+ * implemented in this class.
  */
 package cs4450_project;
 
@@ -21,7 +23,8 @@ import org.newdawn.slick.util.ResourceLoader;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
-public final class Chunk {
+public final class Chunk 
+{
 
     public static final int CHUNK_SIZE = 30;
     private static final int CUBES_PER_BLOCK = CHUNK_SIZE * CHUNK_SIZE
@@ -31,18 +34,17 @@ public final class Chunk {
 
     private static SimplexNoise simplexNoise;
 
-    private final Block[][][] Blocks;
+    public final Block[][][] Blocks;
     private int VBOColorHandle;
     private int VBOTextureHandle;
     private int VBOVertexHandle;
-
     private static Texture texture;
-
-    private final int posX, posZ;
+    private final int posX,posZ;
 
     // method: Chunk
     // purpose: This method is the constructor for our chunk class.
-    public Chunk(int startX, int startZ) {
+    public Chunk(int startX, int startZ) 
+    {
         if (texture == null) try {
             texture = TextureLoader.getTexture("PNG",
                 ResourceLoader.getResourceAsStream("res/terrain.png"));
@@ -53,34 +55,80 @@ public final class Chunk {
 
         if (simplexNoise == null)
             simplexNoise = new SimplexNoise(CHUNK_SIZE * 2, 0.25, r.nextInt());
-
+        
         Blocks = new Block[CHUNK_SIZE][CHUNK_SIZE][CHUNK_SIZE];
-        for (int x = 0; x < CHUNK_SIZE; x++) {
-            for (int z = 0; z < CHUNK_SIZE; z++) {
+        for (int x = 0; x < CHUNK_SIZE; x++) 
+        {
+            for (int z = 0; z < CHUNK_SIZE; z++) 
+            {
                 double height = simplexNoise.getNoise(startX + x, startZ + z)
                     * CHUNK_SIZE
-                    + CHUNK_SIZE / 2;
-                for (int y = 0; y < CHUNK_SIZE; y++) {
-                    if (y == 0) {
+                    + CHUNK_SIZE/2;
+                for (int y = 0; y < CHUNK_SIZE; y++) 
+                {
+                    //base of terrain consist of bedrock blocks
+                    if (y == 0) 
+                    {
                         Blocks[x][y][z] = new Block(BlockType.Bedrock);
-                    } else if (y == Math.floor(height)) {
-                        // grass, sand, or water
+                    }
+                    //top of terrain (above y = 16 ) consist of grass blocks
+                    else if (y == Math.floor(height)  && y >= 16) 
+                    {
+                        Blocks[x][y][z] = new Block(BlockType.Grass);
+                    }
+                    // Between the y values 14 - 16, consist of sand blocks 
+                    else if (y == Math.floor(height) && y < 16 && y >= 14) 
+                    {
+                        Blocks[x][y][z] = new Block(BlockType.Sand);
+                    }
+                    // Water blocks on the outer edges (below y = 14) of the terrain surface
+                    else if (y == Math.floor(height) && y < 14 && y > 0) 
+                    {
+                        Blocks[x][y][z] = new Block(BlockType.Water);
+                    }
+                    // Adds water blocks to the open valleys of the terrain (below y = 14), simulates a lake/river
+                    else if (y > Math.floor(height) && Math.floor(height) < 14 && y < 14) 
+                    {
+                        Blocks[x][y][z] = new Block(BlockType.Water);
+                    }
+                    // All Plants on surface of terrain
+                    else if ( y == Math.floor(height)+1 && Blocks[x][y-1][z].getType() == BlockType.Grass)
+                    {
                         float blockType = r.nextFloat();
-                        if (blockType <= 0.33) {
-                            Blocks[x][y][z] = new Block(BlockType.Grass);
-                        } else if (blockType <= 0.66) {
-                            Blocks[x][y][z] = new Block(BlockType.Sand);
-                        } else {
-                            Blocks[x][y][z] = new Block(BlockType.Water);
+                        if (blockType <= 0.20) {
+                            Blocks[x][y][z] = new Block(BlockType.YellowFlower);
+                        } else if (blockType <= 0.44) {
+                            Blocks[x][y][z] = new Block(BlockType.TreeSapling);
+                        } 
+                        else if (blockType <= 0.66) {
+                            Blocks[x][y][z] = new Block(BlockType.RedFlower);
+                        }else {
+                            Blocks[x][y][z] = new Block(BlockType.TallGrass);
                         }
-                    } else {
+                    }
+                    // In the middle of terrain (below the surface) consist of Stone and Dirt Blocks 
+                    else {
                         // somewhere in the middle.
                         // dirt or stone
                         Blocks[x][y][z] = new Block(
                             r.nextBoolean() ? BlockType.Dirt : BlockType.Stone
                         );
                     }
-                    Blocks[x][y][z].setActive(y <= height);
+                    // Set the lake blocks to Active (able to add texture)
+                    Block b = Blocks[x][y][z];
+                    b.setActive(y <= height);
+                    if (y > Math.floor(height) && Math.floor(height) < 14 && y < 14) 
+                    {
+                        b.setActive(true);
+                    }
+                    // Set the plant blocks to Active (able to add texture)
+                    else if (b.getType() == BlockType.TreeSapling || b.getType() == 
+                                BlockType.YellowFlower || b.getType() == 
+                                BlockType.RedFlower || b.getType() == 
+                                BlockType.TallGrass)
+                    {
+                        b.setActive(true);
+                    }
                 }
             }
         }
@@ -106,7 +154,7 @@ public final class Chunk {
         return Math.sqrt(xDist * xDist + zDist * zDist);
     }
 
-// method: createCubeVertexCol
+    // method: createCubeVertexCol
     // purpose: This method specifies what color the individual
     // cube should be.
     private float[] createCubeVertexCol(float[] CubeColorArray) {
@@ -126,13 +174,12 @@ public final class Chunk {
     // method: rebuildMesh
     // purpose: This method modifies our chunk after it has
     // been initially created.
-    public void rebuildMesh(float startX, float startZ) {
+    public void rebuildMesh(float startX, float startZ) 
+    {
         VBOColorHandle = glGenBuffers();
         VBOVertexHandle = glGenBuffers();
         VBOTextureHandle = glGenBuffers();
-
         int bufferSize = CUBES_PER_BLOCK * 6 * 12;
-
         FloatBuffer VertexPositionData = BufferUtils.createFloatBuffer(
             bufferSize
         );
@@ -140,28 +187,67 @@ public final class Chunk {
         FloatBuffer VertexTextureData = BufferUtils.createFloatBuffer(
             bufferSize
         );
-
+        // Block types: grass, dirt, sand, water, bedrock, stone are processed here
         for (float x = 0; x < CHUNK_SIZE; ++x) {
-            for (float z = 0; z < CHUNK_SIZE; ++z) {
-                for (float y = 0; y < CHUNK_SIZE; ++y) {
-                    Block b = Blocks[(int) x][(int) y][(int) z];
-
-                    if (!b.isActive()) {
+            
+   
+               for (float z = 0; z < CHUNK_SIZE; ++z) {
+                   for (float y = 0; y < CHUNK_SIZE; ++y) {
+                       Block b = Blocks[(int) x][(int) y][(int) z];
+                       if (!b.isActive())
+                       {
+                           continue;
+                       }
+                       // If the block type is a plant, then continue.
+                       if (b.getType() == BlockType.TreeSapling || b.getType() == 
+                                BlockType.YellowFlower || b.getType() == 
+                                BlockType.RedFlower || b.getType() == 
+                                BlockType.TallGrass)
+                        {
                         continue;
+                        }
+                       
+                        VertexPositionData.put(createCube(
+                            (startX + x) * CUBE_LENGTH,
+                            y * CUBE_LENGTH + CHUNK_SIZE * .8f,
+                            (startZ + z) * CUBE_LENGTH));
+                        VertexColorData.put(createCubeVertexCol(getCubeColor(b)));
+                        VertexTextureData.put(createTexCube(0, 0, b));  
+                   }
+               }
+           }
+            // Adds transparency to Plant textures (alpha set to 0)
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+            // Plant block types: redflower, yellowflower, tallGrass, treesapling
+            for (float x = 0; x < CHUNK_SIZE; ++x)
+            {
+                for (float z = 0; z < CHUNK_SIZE; ++z) 
+                {
+                    for (float y = 0; y < CHUNK_SIZE; ++y) 
+                    {
+                        Block b = Blocks[(int) x][(int) y][(int) z];
+                        // if block types is not a plant, then continue
+                        if (b.getType() != BlockType.TreeSapling && b.getType() != 
+                                BlockType.YellowFlower&& b.getType() != 
+                                BlockType.RedFlower&& b.getType() != 
+                                BlockType.TallGrass)
+                        {
+                            continue;
+                        }
+
+                        if (!b.isActive()) {
+                            continue;
+                        }
+                            VertexPositionData.put(createPlant(
+                            (startX + x) * CUBE_LENGTH,
+                            y * CUBE_LENGTH + CHUNK_SIZE * .8f,
+                            (startZ + z) * CUBE_LENGTH
+                            ));
+                            VertexTextureData.put(createTexPlant(0, 0, b));
                     }
-
-                    VertexPositionData.put(createCube(
-                        (startX + x) * CUBE_LENGTH,
-                        y * CUBE_LENGTH + CHUNK_SIZE * .8f,
-                        (startZ + z) * CUBE_LENGTH
-                    ));
-                    VertexColorData.put(createCubeVertexCol(getCubeColor(b)));
-                    VertexTextureData.put(createTexCube(0, 0, b));
-
                 }
             }
-        }
-
         VertexColorData.flip();
         VertexPositionData.flip();
         VertexTextureData.flip();
@@ -177,7 +263,7 @@ public final class Chunk {
     }
 
     // method: render
-    // purpose: This method draws the chunks (blocks with a texture).
+    // purpose: This method draws the chunks (blocks and plants with a texture).
     public void render() {
         glPushMatrix();
         glBindBuffer(GL_ARRAY_BUFFER, VBOTextureHandle);
@@ -192,7 +278,7 @@ public final class Chunk {
     }
 
     // method: createCube
-    // purpose: This method creates a cube at the specified location.
+    // purpose: This method creates a cube.
     public static float[] createCube(float x, float y, float z) {
         int offset = CUBE_LENGTH / 2;
         return new float[]{
@@ -229,7 +315,7 @@ public final class Chunk {
     }
 
     // method: createTexCube
-    // purpose: This method creates the textures
+    // purpose: This method uses the textures
     // (from the  terrian.png file) and adds the specified texture
     //(depending on the case) onto all 6 sides of the block.
     public static float[] createTexCube(float x, float y, Block block) {
@@ -460,5 +546,95 @@ public final class Chunk {
             x + offset * 4, y + offset * 1,
             x + offset * 3, y + offset * 1};
     }
-
+    
+    // method: createPlant
+    // purpose: This method creates a 3D plus shaped object.
+    public static float[] createPlant(float x, float y, float z) {
+        int offset = CUBE_LENGTH / 2;
+        return new float[]{
+            // FRONT CENTER QUAD
+            (x + offset), y + offset, z - (CUBE_LENGTH/2),
+            (x - offset), y + offset, z - (CUBE_LENGTH/2),
+            (x - offset), y - offset, z - (CUBE_LENGTH/2),
+            (x + offset), y - offset, z - (CUBE_LENGTH/2),
+            // LEFT CENTER QUAD
+            x - (offset/2), (y + offset), z - (CUBE_LENGTH),
+            x - (offset/2), (y + offset), z,
+            x - (offset/2), (y - offset), z,
+            x - (offset/2), (y - offset), z - (CUBE_LENGTH),
+        };
+    }
+    // method: createTexPlant
+    // purpose: This method uses the textures
+    // (from the  terrian.png file) and adds the specified texture
+    //(depending on the case) onto the two square surfaces of the plant.
+    public static float[] createTexPlant(float x, float y, Block block) {
+        float offset = (1024f / 16) / 1024f;
+        switch (block.getType()) {
+            case YellowFlower: // 6
+                return new float[]{
+                    // FRONT CENTER QUAD
+                    x + offset * 14, y + offset * 0,
+                    x + offset * 13, y + offset * 0,
+                    x + offset * 13, y + offset * 1,
+                    x + offset * 14, y + offset * 1,
+                    // LEFT CENTER QUAD
+                    x + offset * 14, y + offset * 0,
+                    x + offset * 13, y + offset * 0,
+                    x + offset * 13, y + offset * 1,
+                    x + offset * 14, y + offset * 1,
+                };
+                case TallGrass: // 7
+                return new float[]{
+                    // FRONT CENTER QUAD
+                    x + offset * 16, y + offset * 5,
+                    x + offset * 15, y + offset * 5,
+                    x + offset * 15, y + offset * 6,
+                    x + offset * 16, y + offset * 6,
+                    // LEFT CENTER QUAD
+                    x + offset * 16, y + offset * 5,
+                    x + offset * 15, y + offset * 5,
+                    x + offset * 15, y + offset * 6,
+                    x + offset * 16, y + offset * 6,
+                };
+                case TreeSapling: // 8
+                return new float[]{
+                    // FRONT CENTER QUAD
+                    x + offset * 16, y + offset * 0,
+                    x + offset * 15, y + offset * 0,
+                    x + offset * 15, y + offset * 1,
+                    x + offset * 16, y + offset * 1,
+                    // LEFT CENTER QUAD
+                    x + offset * 16, y + offset * 0,
+                    x + offset * 15, y + offset * 0,
+                    x + offset * 15, y + offset * 1,
+                    x + offset * 16, y + offset * 1,
+                };
+                case RedFlower: // 8
+                return new float[]{
+                    // FRONT CENTER QUAD
+                    x + offset * 13, y + offset * 0,
+                    x + offset * 12, y + offset * 0,
+                    x + offset * 12, y + offset * 1,
+                    x + offset * 13, y + offset * 1,
+                    // LEFT CENTER QUAD
+                    x + offset * 13, y + offset * 0,
+                    x + offset * 12, y + offset * 0,
+                    x + offset * 12, y + offset * 1,
+                    x + offset * 13, y + offset * 1,
+                };
+        }
+        return new float[]{
+                    // FRONT CENTERQUAD
+                    x + offset * 16, y + offset * 0,
+                    x + offset * 15, y + offset * 0,
+                    x + offset * 15, y + offset * 1,
+                    x + offset * 16, y + offset * 1,
+                    // LEFT CENTER QUAD
+                    x + offset * 16, y + offset * 0,
+                    x + offset * 15, y + offset * 0,
+                    x + offset * 15, y + offset * 1,
+                    x + offset * 16, y + offset * 1,
+        };
+    }
 }
