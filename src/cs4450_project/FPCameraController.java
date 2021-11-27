@@ -151,7 +151,7 @@ public class FPCameraController {
                 chunk.render();
                 if (chunk.getBlockDistance(playerX, playerZ)
                     > (CHUNK_RADIUS * Chunk.CHUNK_SIZE * 5) / 3)
-                    toRemove.add(chunk);
+                    toRemove.add(chunk);            
             }
             // draw the buffer to the screen
             Display.update();
