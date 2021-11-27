@@ -103,7 +103,7 @@ public final class Main {
             createWindow();
             initGL();
 
-            fp = new FPCameraController(0f, 0f, 0f); 
+            fp = new FPCameraController(0f, -100f, 100f); 
             fp.gameLoop();
             
         } catch (Exception e) {
@@ -123,7 +123,7 @@ public final class Main {
         lightPosition.put(0.0f).put(0.0f).put(0.0f).put(1.0f).flip();
         // Indicate the RGB values of our light source.
         whiteLight = BufferUtils.createFloatBuffer(4);
-        whiteLight.put(1.0f).put(1.0f).put(1.0f).put(0.0f).flip();
+        whiteLight.put(1.5f).put(1.5f).put(1.5f).put(0.0f).flip();
     }
 
     /**
